@@ -25,11 +25,9 @@ public class HandManager : MonoBehaviour {
 			if (Input.GetTouch(i).phase == TouchPhase.Began) {
 				SpawnHand(Input.GetTouch(i).fingerId);
 			}
-
-//			if (Input.GetTouch(i).phase == TouchPhase.Ended) {
-//				RemoveHand(Input.GetTouch(i).fingerId);
-//			}
 		}
+
+		Debug.Log(Input.touchCount);
 	}
 
 	void SpawnHand(int id) {

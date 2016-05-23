@@ -10,6 +10,9 @@ public class Ball : MonoBehaviour {
 
 	GameObject explosion;
 
+	public bool hover;
+	public float defaultGravityScale;
+
 	// Use this for initialization
 	void Start () {
 		explosion = transform.FindChild("Explosion").gameObject;
@@ -20,6 +23,10 @@ public class Ball : MonoBehaviour {
 		velocity = Vector2.Lerp(velocity, (Vector2)transform.position - lastPos, Time.deltaTime * 3);
 		lastPos = transform.position;
 
+		SquashAndStretch();
+	}
+
+	void SquashAndStretch() {
 		if((Vector3)velocity != Vector3.zero) {
 			Vector3 diff = velocity.normalized;
 	         

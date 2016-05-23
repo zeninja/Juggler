@@ -19,13 +19,19 @@ public class GrabControllerDragDownDirect : MonoBehaviour {
 	LineRenderer lineRenderer;
 	GameObject arrow;
 
-	[System.NonSerialized]
+//	[System.NonSerialized]
 	public int id;
 	Touch myTouch;
 
 	void Start() {
 		arrow = transform.FindChild("Arrow").gameObject;
 		lineRenderer = GetComponent<LineRenderer>();
+	}
+
+	void OnGUI() {
+		if (myTouch.fingerId != null) {
+			GUI.Label(new Rect(transform.position, Vector2.one * 25f), myTouch.fingerId.ToString());
+		}
 	}
 
 	void Update() {
@@ -44,7 +50,7 @@ public class GrabControllerDragDownDirect : MonoBehaviour {
 		#if UNITY_IPHONE
 		for(int i = 0; i < Input.touchCount; i++) {
 			if (Input.GetTouch(i).fingerId == id) {
-				myTouch =  Input.GetTouch(i);
+				myTouch = Input.GetTouch(i);
 			}
 		}
 		#endif
@@ -109,37 +115,9 @@ public class GrabControllerDragDownDirect : MonoBehaviour {
 		}
 	}
 
-	#region Line + Arrow
 	void UpdateLine() {
-		UpdateArrow();
-
-		// Draw a dotted line to indicate the power and direction of the throw
-		lineRenderer.enabled = true;
-		Vector3[] linePositions = new Vector3[] { (Vector2)transform.position + throwDirection * lineLengthModifier, transform.position };
-		lineRenderer.SetPositions(linePositions);
-
-		float distance = Mathf.Abs(throwDirection.magnitude);
-		lineRenderer.material.mainTextureScale = new Vector2(distance * 1.65f * lineLengthModifier, 1);
-		// Multiply by 1.65 because for some unknown reason linerenderers have trouble with tiling textures properly?
-		// Probably an issue with the texture??
+		GetComponent<LineManager>().dragDistance = Mathf.Abs(throwDirection.magnitude);
 	}
-
-	void UpdateArrow() {
-		// Draw an arrow at the end of the line
-		arrow.SetActive(true);
-//		arrow.transform.position = endPos;
-		arrow.transform.position = (Vector2)transform.position + throwDirection * lineLengthModifier;
-
-		Vector3 diff = throwDirection;
-
-		if(diff != Vector3.zero) {
-	        diff.Normalize();
-
-	        float rot_z = Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg;
-	        arrow.transform.rotation = Quaternion.Euler(0f, 0f, rot_z - 90);
-        }
-	}
-	#endregion
 
 	void UpdateRotation() {
 		// Rotate the hand to look towards the aim direction
@@ -167,11 +145,13 @@ public class GrabControllerDragDownDirect : MonoBehaviour {
 		ball.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
 		ball.GetComponent<Rigidbody2D>().gravityScale = 0;
 		ball.transform.parent = transform;
+
+//		transform.FindChild("Ring").GetComponent<ParticleSystem>().Play();
 	}
 
 	void ThrowBall() {
 		// Throw the ball
-		if(ball != null) {
+		if (ball != null) {
 			holdingBall = false;
 			ball.GetComponent<Rigidbody2D>().velocity = throwDirection * throwForceModifier;
 			ball.GetComponent<Rigidbody2D>().gravityScale = .75f;
