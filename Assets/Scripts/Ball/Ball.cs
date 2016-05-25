@@ -8,20 +8,48 @@ public class Ball : MonoBehaviour {
 
 	public GameObject art;
 
-	GameObject explosion;
-
-	public bool hover;
-	public float defaultGravityScale;
-
+	[System.NonSerialized]
+	public bool canBeCaught;
+	[System.NonSerialized]
 	public bool held;
 
+	public float launchVelocity = 10;
+
+	Rigidbody2D rigidbody;
+
+	GameObject explosion;
+
 	// Use this for initialization
-	void Start () {
+	void Awake () {
 		explosion = transform.FindChild("Explosion").gameObject;
+
+		rigidbody = GetComponent<Rigidbody2D>();
+	}
+
+	public void Launch() {
+		rigidbody.velocity = Vector2.up * launchVelocity;
+		canBeCaught = false;
+	}
+
+	public void SetColor(Color newColor) {
+		art.GetComponent<MeshRenderer>().material.color = newColor;
+	}
+
+	void SetTransparent() {
+		Color currentColor = art.GetComponent<MeshRenderer>().material.color;
+		currentColor.a = canBeCaught ? .5f : 1f;
+		art.GetComponent<MeshRenderer>().material.color = currentColor;
 	}
 	
 	// Update is called once per frame
 	void Update () {
+//		if (!canBeCaught) {
+//			if (rigidbody.velocity.y <= 0) {	
+//				canBeCaught = true;
+//			}
+//			SetTransparent();
+//		}
+
 		velocity = Vector2.Lerp(velocity, (Vector2)transform.position - lastPos, Time.deltaTime * 3);
 		lastPos = transform.position;
 
@@ -40,7 +68,7 @@ public class Ball : MonoBehaviour {
 	}
 
 	public void HandleDeath() {
-		GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+		rigidbody.velocity = Vector2.zero;
 		gameObject.ShakeScale(new Vector3(1, 1, 0) * .5f, .5f, 0);
 
 		Invoke("Die", .5f);

@@ -7,7 +7,7 @@ public class HandManager : MonoBehaviour {
 	int prevTouchCount;
 	public GameObject handPrefab;
 
-	static Dictionary<int, GameObject> hands = new Dictionary<int, GameObject>();
+//	static Dictionary<int, GameObject> hands = new Dictionary<int, GameObject>();
 
 	// Use this for initialization
 	void Start () {
@@ -30,14 +30,14 @@ public class HandManager : MonoBehaviour {
 
 	void SpawnHand(int id) {
 		GameObject hand = Instantiate(handPrefab) as GameObject;
-		hand.GetComponent<GrabControllerDragDownDirect>().id = id;
-		hands.Add(id, hand);
+		hand.GetComponent<GrabControllerFlick>().id = id;
+//		hands.Add(id, hand);
 	}
 
-	public static void RemoveHand(int id) {
-		Destroy(hands[id]);
-		hands.Remove(id);
-	}
+//	public static void RemoveHand(int id) {
+//		Destroy(hands[id]);
+//		hands.Remove(id);
+//	}
 
 	bool handSpawned;
 	void DebugHand() {

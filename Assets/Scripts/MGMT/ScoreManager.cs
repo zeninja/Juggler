@@ -11,6 +11,8 @@ public class ScoreManager : MonoBehaviour {
 	public float animationDuration = .3f;
 	Vector2 scorePos, highPos, lowPos;
 
+	public float scorePulseAmount = .5f;
+
 	private static ScoreManager instance;
 	private static bool instantiated;
 
@@ -60,10 +62,10 @@ public class ScoreManager : MonoBehaviour {
 
 	void Update() {
 		if (Input.GetKeyDown(KeyCode.C)) {
+			// Quick debug reset high score
 			PlayerPrefs.SetInt(highScoreKey, 0);
 			highScore = 0;
 			highScoreDisplay.GetComponent<Text>().text = highScore.ToString();
-
 		}
 	}
 
@@ -92,16 +94,23 @@ public class ScoreManager : MonoBehaviour {
 	}
 
 	IEnumerator AnimateScore() {
-		newScore.GetComponent<Text>().text = score.ToString();
+		#region old drop score animation
+//		newScore.GetComponent<Text>().text = score.ToString();
+//
+//		StartCoroutine(GetComponent<NewTweens>().MoveToEaseOutBack(oldScore, scorePos, lowPos, animationDuration));
+//		StartCoroutine(GetComponent<NewTweens>().MoveToEaseOutBack(newScore, highPos, scorePos, animationDuration));
+//
+//
+//		yield return new WaitForSeconds(animationDuration + Time.deltaTime);
+//		oldScore.GetComponent<Text>().text = score.ToString();
+//
+//		oldScore.transform.position = scorePos;
+//		newScore.transform.position = highPos;
+		#endregion
 
-		StartCoroutine(GetComponent<NewTweens>().MoveToEaseOutBack(oldScore, scorePos, lowPos, animationDuration));
-		StartCoroutine(GetComponent<NewTweens>().MoveToEaseOutBack(newScore, highPos, scorePos, animationDuration));
-		yield return new WaitForSeconds(animationDuration + Time.deltaTime);
 		oldScore.GetComponent<Text>().text = score.ToString();
-
-
-		oldScore.transform.position = scorePos;
-		newScore.transform.position = highPos;
+		StartCoroutine(GetComponent<NewTweens>().PulseScale(oldScore, Vector3.one * scorePulseAmount, animationDuration));
+		yield return new WaitForEndOfFrame();
 	}
 
 	public void HandleGameOver() {

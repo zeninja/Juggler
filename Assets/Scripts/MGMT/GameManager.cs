@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour {
 	public GameObject ball;
 	bool firstBallSpawned;
 	bool debugBallSpawned;
+	int numBalls;
 
 	public static bool gameOver;
 
@@ -20,6 +21,8 @@ public class GameManager : MonoBehaviour {
 	float spawnHoldThreshold = .5f;
 
 	public GameObject burst;
+
+	public Color[] ballColors;
 
 	public static GameManager GetInstance ()
 	{
@@ -73,15 +76,30 @@ public class GameManager : MonoBehaviour {
 		GameObject newBall = Instantiate(ball);
 		newBall.transform.position = new Vector3(0, 6, 0);
 		balls.Add(newBall);
+		numBalls++;
 	}
 
 	public void SpawnBall() {
 		if(gameOver) { return; }
 
+//		GameObject newBall = Instantiate(ball);
+//		newBall.transform.position = new Vector3(Random.Range(-2.3f, 2.3f), 9.5f, 0);
+//
+//		balls.Add(newBall);
+
+		LaunchBall();
+	}
+
+	void LaunchBall() {
+		if(gameOver) { return; }
+
 		GameObject newBall = Instantiate(ball);
-		newBall.transform.position = new Vector3(Random.Range(-2.3f, 2.3f), 9.5f, 0);
+		newBall.transform.position = new Vector3(Random.Range(-2.3f, 2.3f), -2, 0);
+		newBall.GetComponent<Ball>().Launch();
+//		newBall.GetComponent<Ball>().SetColor(ballColors[numBalls]);
 
 		balls.Add(newBall);
+		numBalls++;
 	}
 
 	void DebugSpawn() {
@@ -116,5 +134,6 @@ public class GameManager : MonoBehaviour {
 	public void Restart() {
 		gameOver = false;
 		firstBallSpawned = false;
+		numBalls = 0;
 	}
 }

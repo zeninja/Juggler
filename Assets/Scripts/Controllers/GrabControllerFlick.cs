@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class GrabControllerDragDownDirect : MonoBehaviour {
+public class GrabControllerFlick : MonoBehaviour {
 
 	Vector2 handPos;
 	Vector2 dragStart, dragEnd;
@@ -21,7 +21,7 @@ public class GrabControllerDragDownDirect : MonoBehaviour {
 	Touch myTouch;
 
 	void Update() {
-		throwDirection = dragStart - dragEnd;
+		throwDirection = dragEnd - dragStart;
 		FindTouch();
 		handPos = FindHandPos();
 
@@ -114,7 +114,6 @@ public class GrabControllerDragDownDirect : MonoBehaviour {
 	void OnTriggerEnter2D(Collider2D other) {
 		// Grab any balls we hit (as long as we're not already holding one)
 		if (other.CompareTag("Ball") && !holdingBall) {
-			
 			ball = other.gameObject;
 			if(!ball.GetComponent<Ball>().held) {
 				GrabBall();
