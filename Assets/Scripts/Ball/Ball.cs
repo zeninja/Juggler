@@ -13,6 +13,8 @@ public class Ball : MonoBehaviour {
 	public bool hover;
 	public float defaultGravityScale;
 
+	public bool held;
+
 	// Use this for initialization
 	void Start () {
 		explosion = transform.FindChild("Explosion").gameObject;

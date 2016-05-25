@@ -28,12 +28,6 @@ public class GrabControllerDragDownDirect : MonoBehaviour {
 		lineRenderer = GetComponent<LineRenderer>();
 	}
 
-	void OnGUI() {
-		if (myTouch.fingerId != null) {
-			GUI.Label(new Rect(transform.position, Vector2.one * 25f), myTouch.fingerId.ToString());
-		}
-	}
-
 	void Update() {
 		throwDirection = dragStart - dragEnd;
 		FindTouch();
@@ -134,8 +128,12 @@ public class GrabControllerDragDownDirect : MonoBehaviour {
 		// Grab any balls we hit (as long as we're not already holding one)
 		if (other.CompareTag("Ball") && !holdingBall) {
 			ball = other.gameObject;
-			GrabBall();
-			ScoreManager.GetInstance().UpdateScore();
+			if(!ball.GetComponent<Ball>().held) {
+				GrabBall();
+				ScoreManager.GetInstance().UpdateScore();
+			} else {
+				ball = null;
+			}
 		}
 	}
 
@@ -144,6 +142,7 @@ public class GrabControllerDragDownDirect : MonoBehaviour {
 		holdingBall = true;
 		ball.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
 		ball.GetComponent<Rigidbody2D>().gravityScale = 0;
+		ball.GetComponent<Ball>().held = true;
 		ball.transform.parent = transform;
 
 //		transform.FindChild("Ring").GetComponent<ParticleSystem>().Play();
@@ -155,18 +154,18 @@ public class GrabControllerDragDownDirect : MonoBehaviour {
 			holdingBall = false;
 			ball.GetComponent<Rigidbody2D>().velocity = throwDirection * throwForceModifier;
 			ball.GetComponent<Rigidbody2D>().gravityScale = .75f;
+			ball.GetComponent<Ball>().held = false;
 			ball.transform.parent = null;
-
 			ball = null;
 		}
 	}
 
-	public void Reset() {
-		ball = null;
-		holdingBall = false;
-		transform.position = Vector2.zero;
-		transform.rotation = Quaternion.identity;
-	}
+//	public void Reset() {
+//		ball = null;
+//		holdingBall = false;
+//		transform.position = Vector2.zero;
+//		transform.rotation = Quaternion.identity;
+//	}
 
 	void OnDrawGizmos() {
 		if(enabled) {

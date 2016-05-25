@@ -84,7 +84,7 @@ public class ScoreManager : MonoBehaviour {
 
 	void CheckBallSpawn() {
 		if (score % spawnAmount == 0) {
-			spawnAmount += spawnAmount + 3;
+			spawnAmount += spawnAmount + 2;
 			GameManager.GetInstance().SpawnBall();
 		}
 
@@ -152,7 +152,7 @@ public class ScoreManager : MonoBehaviour {
 
 		while (Time.time < timeFinished) {
 			newHighScoreText.GetComponent<Text>().enabled = !newHighScoreText.GetComponent<Text>().enabled;
-			oldScore.GetComponent<Text>().enabled = !oldScore.GetComponent<Text>().enabled;
+//			oldScore.GetComponent<Text>().enabled = !oldScore.GetComponent<Text>().enabled;
 			yield return new WaitForSeconds(.25f);
 		}
 		newHighScoreText.GetComponent<Text>().enabled = false;
@@ -161,9 +161,26 @@ public class ScoreManager : MonoBehaviour {
 
 	IEnumerator RainbowNumber() {
 		float t = 0;
+		int numLoops = 3;
+		int currentLoops = 0;
 
-		while (t < 1) {
-			t += Time.deltaTime/highScoreDuration;
+//		while (t < 1) {
+//			t += Time.deltaTime/highScoreDuration;
+////			t += (Time.deltaTime * 3)/highScoreDuration;
+////			t += (Time.deltaTime * numLoops) % (highScoreDuration/numLoops);
+//			oldScore.GetComponent<Text>().color = highScoreGradient.Evaluate(t);
+//			yield return new WaitForEndOfFrame();
+//		}
+
+		while (t < highScoreDuration && currentLoops < numLoops) {
+			t += Time.deltaTime;
+
+			if (t > 1) {
+				t %= 1;
+				currentLoops++;
+			}
+//			t += (Time.deltaTime * 3)/highScoreDuration;
+//			t += (Time.deltaTime * numLoops) % (highScoreDuration/numLoops);
 			oldScore.GetComponent<Text>().color = highScoreGradient.Evaluate(t);
 			yield return new WaitForEndOfFrame();
 		}
@@ -173,9 +190,20 @@ public class ScoreManager : MonoBehaviour {
 
 	IEnumerator RainbowText() {
 		float t = 0;
+		int numLoops = 3;
+		int currentLoops = 0;
 
-		while (t < 1) {
-			t += Time.deltaTime/highScoreDuration;
+		while (t < highScoreDuration && currentLoops < numLoops) {
+			t += Time.deltaTime;
+			t %= 1;
+
+			if (t > 1) {
+				t %= 1;
+				currentLoops++;
+			}
+
+//			t += (Time.deltaTime * 3)/highScoreDuration;
+//			t += (Time.deltaTime * numLoops) % (highScoreDuration/numLoops);
 			newHighScoreText.GetComponent<Text>().color = highScoreGradient.Evaluate(t) ;
 
 			yield return new WaitForEndOfFrame();

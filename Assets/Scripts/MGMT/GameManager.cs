@@ -19,6 +19,8 @@ public class GameManager : MonoBehaviour {
 	float inputDuration = 0;
 	float spawnHoldThreshold = .5f;
 
+	public GameObject burst;
+
 	public static GameManager GetInstance ()
 	{
 		if (!instance) {
@@ -55,6 +57,8 @@ public class GameManager : MonoBehaviour {
 
 				if (inputDuration >= spawnHoldThreshold) {
 					SpawnFirstBall();
+					burst.GetComponent<BurstController>().Burst();
+
 					firstBallSpawned = true;
 					ballImage.enabled = false;
 				}

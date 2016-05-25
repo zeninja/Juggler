@@ -26,8 +26,6 @@ public class HandManager : MonoBehaviour {
 				SpawnHand(Input.GetTouch(i).fingerId);
 			}
 		}
-
-		Debug.Log(Input.touchCount);
 	}
 
 	void SpawnHand(int id) {
