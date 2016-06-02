@@ -9,7 +9,6 @@ public class GrabControllerDragDownDirect : MonoBehaviour {
 	[System.NonSerialized]
 	public Vector2 throwDirection;
 	public float throwForceModifier = 6f;
-	public float lineLengthModifier = 2;
 
 	[System.NonSerialized]
 	public bool holdingBall;
@@ -25,7 +24,7 @@ public class GrabControllerDragDownDirect : MonoBehaviour {
 		FindTouch();
 		handPos = FindHandPos();
 
-		#if !UNITY_IPHONE || UNITY_EDITOR || UNITY_STANDALONE_OSX
+		#if !UNITY_IOS || UNITY_EDITOR || UNITY_STANDALONE_OSX
 		ManageInput();
 		#else 
 		ManageTouchInput();
@@ -33,7 +32,7 @@ public class GrabControllerDragDownDirect : MonoBehaviour {
 	}
 
 	void FindTouch() {
-		#if UNITY_IPHONE
+		#if UNITY_IOS
 		for(int i = 0; i < Input.touchCount; i++) {
 			if (Input.touches[i].fingerId == id) {
 				myTouch = Input.GetTouch(i);
@@ -45,7 +44,7 @@ public class GrabControllerDragDownDirect : MonoBehaviour {
 	Vector2 FindHandPos() {
 		Vector2 handPos;
 
-		#if !UNITY_IPHONE || UNITY_EDITOR || UNITY_STANDALONE_OSX
+		#if !UNITY_IOS || UNITY_EDITOR || UNITY_STANDALONE_OSX
 		handPos = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		#else
 		handPos = (Vector2)Camera.main.ScreenToWorldPoint(myTouch.position);
@@ -95,7 +94,7 @@ public class GrabControllerDragDownDirect : MonoBehaviour {
 	}
 
 	void UpdateLine() {
-		GetComponent<LineManager>().dragDistance = Mathf.Abs(throwDirection.magnitude);
+		GetComponent<LineManager>().throwVector = throwDirection;
 	}
 
 	void UpdateRotation() {
@@ -132,6 +131,7 @@ public class GrabControllerDragDownDirect : MonoBehaviour {
 		ball.GetComponent<Rigidbody2D>().gravityScale = 0;
 		ball.GetComponent<Ball>().held = true;
 		ball.transform.parent = transform;
+
 
 //		transform.FindChild("Ring").GetComponent<ParticleSystem>().Play();
 	}

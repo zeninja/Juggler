@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.SocialPlatforms;
+using UnityEngine.UI;
 
 public class Leaderboards : MonoBehaviour {
 
@@ -9,7 +10,10 @@ public class Leaderboards : MonoBehaviour {
     void Start () {
         // Authenticate and register a ProcessAuthentication callback
         // This call needs to be made before we can proceed to other calls in the Social API
-        Social.localUser.Authenticate (ProcessAuthentication);
+
+        if(!Social.localUser.authenticated) {
+	        Social.localUser.Authenticate (ProcessAuthentication);
+        }
     }
 
     // This function gets called when Authenticate completes
@@ -50,5 +54,15 @@ public class Leaderboards : MonoBehaviour {
 
 	public void ShowLeaderboard() {
 		Social.ShowLeaderboardUI();
+	}
+
+	public void SetHighScore(int newScore) {
+		ReportScore((long)newScore, leaderboardID);
+	}
+
+	void Update() {
+		// TODO: UPDATE THIS TO BE A DIRECT CALL RATHER THAN UPDATE
+		GetComponent<Image>().enabled = GameManager.gameOver || !GameManager.gameStarted;
+		GetComponent<Button>().enabled = GameManager.gameOver || !GameManager.gameStarted;
 	}
 }

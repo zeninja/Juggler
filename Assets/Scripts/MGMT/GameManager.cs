@@ -9,10 +9,8 @@ public class GameManager : MonoBehaviour {
 	bool debugBallSpawned;
 	int numBalls;
 
+	public static bool gameStarted;
 	public static bool gameOver;
-
-	private static GameManager instance;
-	private static bool instantiated;
 
 	List<GameObject> balls = new List<GameObject>();
 
@@ -22,7 +20,8 @@ public class GameManager : MonoBehaviour {
 
 	public GameObject burst;
 
-	public Color[] ballColors;
+	private static GameManager instance;
+	private static bool instantiated;
 
 	public static GameManager GetInstance ()
 	{
@@ -47,15 +46,10 @@ public class GameManager : MonoBehaviour {
 
 	void SpawnBallOnInput() {
 		if (!gameOver && !firstBallSpawned) {
-//			if (Input.touchCount > 0 || Input.GetMouseButtonDown(0)) {
-//				SpawnBall();
-//				firstBallSpawned = true;
-//			}
-
 			if (Input.touchCount > 0 || Input.GetMouseButton(0)) {
 				inputDuration += Time.deltaTime;
 
-				ballImage.enabled = true;
+				ballImage.gameObject.SetActive(true);
 				ballImage.fillAmount = inputDuration/spawnHoldThreshold;
 
 				if (inputDuration >= spawnHoldThreshold) {
@@ -63,7 +57,7 @@ public class GameManager : MonoBehaviour {
 					burst.GetComponent<BurstController>().Burst();
 
 					firstBallSpawned = true;
-					ballImage.enabled = false;
+					ballImage.gameObject.SetActive(false);
 				}
 			} else {
 				ballImage.fillAmount = 0;
@@ -73,30 +67,40 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void SpawnFirstBall() {
+		gameStarted = true;
+
 		GameObject newBall = Instantiate(ball);
 		newBall.transform.position = new Vector3(0, 6, 0);
+
+		newBall.GetComponent<Ball>().zDepth = -1;
+		newBall.GetComponent<Ball>().SetDepth();
+//		newBall.GetComponent<Ball>().SetColor();
 		balls.Add(newBall);
 		numBalls++;
 	}
 
-	public void SpawnBall() {
-		if(gameOver) { return; }
+	public void AdjustBallDepth(GameObject latestBall) {
+		for (int i = 0; i < balls.Count; i++) {
+			if(balls[i].GetComponent<Ball>().canBeCaught) {
+				balls[i].GetComponent<Ball>().zDepth++;
 
-//		GameObject newBall = Instantiate(ball);
-//		newBall.transform.position = new Vector3(Random.Range(-2.3f, 2.3f), 9.5f, 0);
-//
-//		balls.Add(newBall);
+				if (balls[i] == latestBall) {
+					balls[i].GetComponent<Ball>().zDepth = 0;
+				}
 
-		LaunchBall();
+				balls[i].GetComponent<Ball>().SetDepth();
+			}
+		}
 	}
 
-	void LaunchBall() {
+	public void LaunchBall() {
 		if(gameOver) { return; }
 
 		GameObject newBall = Instantiate(ball);
 		newBall.transform.position = new Vector3(Random.Range(-2.3f, 2.3f), -2, 0);
 		newBall.GetComponent<Ball>().Launch();
-//		newBall.GetComponent<Ball>().SetColor(ballColors[numBalls]);
+		newBall.GetComponent<Ball>().zDepth = -1;
+		newBall.GetComponent<Ball>().SetDepth();
 
 		balls.Add(newBall);
 		numBalls++;
@@ -105,7 +109,7 @@ public class GameManager : MonoBehaviour {
 	void DebugSpawn() {
 		#if UNITY_EDITOR 
 		if (Input.GetKeyDown(KeyCode.Space) || (Input.touches.Length == 2 && !debugBallSpawned) && !gameOver) {
-			SpawnBall();
+			LaunchBall();
 			debugBallSpawned = true;
 		}
 
@@ -126,9 +130,11 @@ public class GameManager : MonoBehaviour {
 		if(gameOver) { return; }
 
 		gameOver = true;
+		gameStarted = false;
 		DestroyBalls();
 
 		ScoreManager.GetInstance().HandleGameOver();
+		AdManager.GetInstance().CheckAd();
 	}
 
 	public void Restart() {

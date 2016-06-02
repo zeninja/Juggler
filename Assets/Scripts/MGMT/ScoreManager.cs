@@ -4,31 +4,26 @@ using UnityEngine.UI;
 
 public class ScoreManager : MonoBehaviour {
 
-	public GameObject oldScore, newScore, highScoreDisplay, newHighScoreText;
-	public GameObject nextBall;
-	int score;
+	public GameObject scoreDisplay, highScoreDisplay, newHighScoreText;
+	public static int score;
 
 	public float animationDuration = .3f;
-	Vector2 scorePos, highPos, lowPos;
 
 	public float scorePulseAmount = .5f;
-
-	private static ScoreManager instance;
-	private static bool instantiated;
-
-	int spawnAmount = 5;
 
 	int highScore;
 
 	public int highScoreDuration = 3;
 
 	public Color scoreColor;
-	public Color highScoreColor;
-	public Color targetColor;
-
 	public Gradient highScoreGradient;
 
 	string highScoreKey = "highScore";
+
+	public Leaderboards leaderboard;
+
+	private static ScoreManager instance;
+	private static bool instantiated;
 
 	public static ScoreManager GetInstance ()
 	{
@@ -51,12 +46,7 @@ public class ScoreManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		scorePos = oldScore.transform.position;
-		highPos  = newScore.transform.position;
-		lowPos   = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width/2, -300));
-
 		SetColors();
-//		StartCoroutine(Rainbow(highScoreDisplay, 10, true));
 		StartCoroutine(RainbowHighScore());
 	}
 
@@ -69,47 +59,21 @@ public class ScoreManager : MonoBehaviour {
 		}
 	}
 
-	void SetColors() {
-		oldScore.GetComponent<Text>().color = scoreColor;
-		newScore.GetComponent<Text>().color = scoreColor;
-		nextBall.GetComponent<Text>().color = targetColor;
-		highScoreDisplay.GetComponent<Text>().color = targetColor;
+	public void SetColors() {
+		scoreColor = scoreDisplay.GetComponent<ColorSchemeUtility>().currentColor;
 	}
 
 	public void UpdateScore() {
 		if (GameManager.gameOver) { return; }
 
 		score++;
-		CheckBallSpawn();
+		GetComponent<BallSpawner>().CheckScoreAndSpawnBall();
 		StartCoroutine("AnimateScore");
 	}
 
-	void CheckBallSpawn() {
-		if (score % spawnAmount == 0) {
-			spawnAmount += spawnAmount + 2;
-			GameManager.GetInstance().SpawnBall();
-		}
-
-		nextBall.GetComponent<Text>().text = "Next ball in: " + (spawnAmount - score).ToString();
-	}
-
 	IEnumerator AnimateScore() {
-		#region old drop score animation
-//		newScore.GetComponent<Text>().text = score.ToString();
-//
-//		StartCoroutine(GetComponent<NewTweens>().MoveToEaseOutBack(oldScore, scorePos, lowPos, animationDuration));
-//		StartCoroutine(GetComponent<NewTweens>().MoveToEaseOutBack(newScore, highPos, scorePos, animationDuration));
-//
-//
-//		yield return new WaitForSeconds(animationDuration + Time.deltaTime);
-//		oldScore.GetComponent<Text>().text = score.ToString();
-//
-//		oldScore.transform.position = scorePos;
-//		newScore.transform.position = highPos;
-		#endregion
-
-		oldScore.GetComponent<Text>().text = score.ToString();
-		StartCoroutine(GetComponent<NewTweens>().PulseScale(oldScore, Vector3.one * scorePulseAmount, animationDuration));
+		scoreDisplay.GetComponent<Text>().text = score.ToString();
+		StartCoroutine(GetComponent<NewTweens>().PulseScale(scoreDisplay, Vector3.one * scorePulseAmount, animationDuration));
 		yield return new WaitForEndOfFrame();
 	}
 
@@ -129,6 +93,10 @@ public class ScoreManager : MonoBehaviour {
 			PlayerPrefs.SetInt(highScoreKey, highScore);
 			PlayerPrefs.Save();
 
+			#if UNITY_STANDALONE_IOS
+			leaderboard.SetHighScore(highScore);
+			#endif
+
 			StartCoroutine(RainbowNumber());
 			StartCoroutine(RainbowText());
 			StartCoroutine(UpdateHighScoreDisplay());
@@ -138,19 +106,17 @@ public class ScoreManager : MonoBehaviour {
 	}
 
 	public IEnumerator Reset() {
-		spawnAmount = 5;
-
 		float startingScore = score;
 		float resetDuration = .5f;
 
 		yield return new WaitForSeconds(.5f);
 		while (score > 0) {
 			score--;
-			oldScore.GetComponent<Text>().text = score.ToString();
+			scoreDisplay.GetComponent<Text>().text = score.ToString();
 
 			yield return new WaitForSeconds(resetDuration/startingScore);
 		}
-		nextBall.GetComponent<Text>().text = "Next ball in: 5";
+//		nextBall.GetComponent<Text>().text = "Next ball in: 5";
 		GameManager.GetInstance().Restart();
 	}
 
@@ -161,25 +127,16 @@ public class ScoreManager : MonoBehaviour {
 
 		while (Time.time < timeFinished) {
 			newHighScoreText.GetComponent<Text>().enabled = !newHighScoreText.GetComponent<Text>().enabled;
-//			oldScore.GetComponent<Text>().enabled = !oldScore.GetComponent<Text>().enabled;
 			yield return new WaitForSeconds(.25f);
 		}
 		newHighScoreText.GetComponent<Text>().enabled = false;
-		oldScore.GetComponent<Text>().enabled = true;
+		scoreDisplay.GetComponent<Text>().enabled = true;
 	}
 
 	IEnumerator RainbowNumber() {
 		float t = 0;
 		int numLoops = 3;
 		int currentLoops = 0;
-
-//		while (t < 1) {
-//			t += Time.deltaTime/highScoreDuration;
-////			t += (Time.deltaTime * 3)/highScoreDuration;
-////			t += (Time.deltaTime * numLoops) % (highScoreDuration/numLoops);
-//			oldScore.GetComponent<Text>().color = highScoreGradient.Evaluate(t);
-//			yield return new WaitForEndOfFrame();
-//		}
 
 		while (t < highScoreDuration && currentLoops < numLoops) {
 			t += Time.deltaTime;
@@ -190,11 +147,11 @@ public class ScoreManager : MonoBehaviour {
 			}
 //			t += (Time.deltaTime * 3)/highScoreDuration;
 //			t += (Time.deltaTime * numLoops) % (highScoreDuration/numLoops);
-			oldScore.GetComponent<Text>().color = highScoreGradient.Evaluate(t);
+			scoreDisplay.GetComponent<Text>().color = highScoreGradient.Evaluate(t);
 			yield return new WaitForEndOfFrame();
 		}
 
-		oldScore.GetComponent<Text>().color = scoreColor;
+		scoreDisplay.GetComponent<Text>().color = scoreColor;
 	}
 
 	IEnumerator RainbowText() {

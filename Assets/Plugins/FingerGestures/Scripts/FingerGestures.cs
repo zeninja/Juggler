@@ -1103,7 +1103,7 @@ iPad mini2    2048x1536 326 ppi
                 if( screenDPI <= 0 )
                     screenDPI = DESKTOP_SCREEN_STANDARD_DPI;
 
-#if UNITY_IPHONE
+#if UNITY_IOS
                 // try to detect some devices that aren't supported by Unity (yet)
                 if( UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.Unknown ||
                     UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPadUnknown ||
