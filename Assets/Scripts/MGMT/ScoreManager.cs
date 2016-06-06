@@ -74,7 +74,16 @@ public class ScoreManager : MonoBehaviour {
 
 	IEnumerator AnimateScore() {
 		scoreDisplay.GetComponent<Text>().text = score.ToString();
-		StartCoroutine(GetComponent<NewTweens>().PulseScale(scoreDisplay, Vector3.one * scorePulseAmount, animationDuration));
+
+		float currentPulseAmount = scorePulseAmount;
+
+		if(score == 5 || score == 15 || score % 25 == 0) {
+			StartCoroutine(FlashText(animationDuration));
+//			currentPulseAmount = 1.25f;
+		} else {
+
+			StartCoroutine(GetComponent<NewTweens>().PulseScale(scoreDisplay, Vector3.one * currentPulseAmount, animationDuration));
+		}
 		yield return new WaitForEndOfFrame();
 	}
 
@@ -146,6 +155,19 @@ public class ScoreManager : MonoBehaviour {
 			yield return new WaitForSeconds(.25f);
 		}
 		newHighScoreText.GetComponent<Text>().enabled = false;
+		scoreDisplay.GetComponent<Text>().enabled = true;
+	}
+
+	IEnumerator FlashText(float duration) {
+		float timeFinished = Time.time + duration;
+
+		scoreDisplay.GetComponent<Text>().enabled = true;
+
+		while (Time.time < timeFinished) {
+			scoreDisplay.GetComponent<Text>().enabled = !scoreDisplay.GetComponent<Text>().enabled;
+			yield return new WaitForSeconds(duration/5);
+		}
+//		scoreDisplay.GetComponent<Text>().enabled = false;
 		scoreDisplay.GetComponent<Text>().enabled = true;
 	}
 

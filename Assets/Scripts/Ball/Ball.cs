@@ -93,10 +93,6 @@ public class Ball : MonoBehaviour {
 		ring.enabled = held;
 		ringBG.enabled = held;
 	}
-
-	public void ResetArrow() {
-		
-	}
 	
 	// Update is called once per frame
 	void Update () {

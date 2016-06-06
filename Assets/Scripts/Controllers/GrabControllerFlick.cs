@@ -139,6 +139,7 @@ public class GrabControllerFlick : MonoBehaviour {
 		ball.GetComponent<Ball>().held = true;
 		ball.GetComponent<Ball>().FlashColor();
 		ball.GetComponent<Ball>().ActivateRing();
+		ball.GetComponent<LineManager>().Reset();
 		ball.transform.parent = transform;
 
 		GameManager.GetInstance().AdjustBallDepth(ball);
@@ -154,7 +155,6 @@ public class GrabControllerFlick : MonoBehaviour {
 			ball.GetComponent<Rigidbody2D>().gravityScale = .75f;
 			ball.GetComponent<Ball>().held = false;
 			ball.GetComponent<Ball>().ActivateRing();
-			ball.GetComponent<Ball>().ResetArrow();
 			ball.transform.parent = null;
 
 			ball = null;

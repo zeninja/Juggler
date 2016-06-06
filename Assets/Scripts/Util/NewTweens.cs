@@ -5,6 +5,7 @@ public class NewTweens : MonoBehaviour {
 
 	public AnimationCurve easeOutBackCurve;
 	public AnimationCurve pulseCurve;
+//	public AnimationCurve newPulseCurve;
 
 	void Start() {
 		

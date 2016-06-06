@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class BurstController : MonoBehaviour {
 
@@ -7,13 +8,13 @@ public class BurstController : MonoBehaviour {
 
 	void Start() {
 		for (int i = 0; i < bursts.Length; i++) {
-			bursts[i].gameObject.SetActive(false);
+			bursts[i].GetComponent<Image>().enabled = false;
 		}
 	}
 
 	public void Burst() {
 		for (int i = 0; i < bursts.Length; i++) {
-			bursts[i].gameObject.SetActive(true);
+			bursts[i].GetComponent<Image>().enabled = true;
 			bursts[i].GetComponent<BurstSegment>().StartAnimation();
 		}
 	}

@@ -46,9 +46,6 @@ public class LineManager : MonoBehaviour {
 		UpdateArrow();
 
 		mat.mainTextureScale = new Vector2(1, dragStrength * lineLengthModifier * scalar);
-
-		line.GetComponent<MeshRenderer>().enabled = ball.held;
-		arrow.GetComponent<SpriteRenderer>().enabled = ball.held;
 	}
 
 	void UpdateRotation() {
@@ -74,5 +71,9 @@ public class LineManager : MonoBehaviour {
 
 	void UpdateArrow() {
 		arrow.transform.localPosition = new Vector2(0, dragStrength * lineLengthModifier);
+	}
+
+	public void Reset() {
+		throwVector = Vector2.zero;
 	}
 }

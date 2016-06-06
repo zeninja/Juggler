@@ -4,12 +4,14 @@ using UnityEngine.UI;
 
 public class BurstSegment : MonoBehaviour {
 
-	public Image sprite;
+	Image image;
 	public float burstDuration = .5f;
 
-	public float width;
-
 	Vector2 originalScale;
+
+	void Awake() {
+		image = GetComponent<Image>();
+	}
 	
 	// Update is called once per frame
 	void Update () {
@@ -34,7 +36,7 @@ public class BurstSegment : MonoBehaviour {
 
 		while (t < sectionDuration) {
 			t += Time.fixedDeltaTime;
-			sprite.GetComponent<Image>().fillAmount = t/sectionDuration;
+			image.GetComponent<Image>().fillAmount = t/sectionDuration;
 			yield return new WaitForEndOfFrame();
 		}
 	}
@@ -42,17 +44,17 @@ public class BurstSegment : MonoBehaviour {
 	IEnumerator AnimateOut() {
 		float t = 0;
 		float sectionDuration = burstDuration/2;
-		sprite.GetComponent<Image>().fillOrigin = 1;
+		image.GetComponent<Image>().fillOrigin = 1;
 
 		while (t < sectionDuration) {
 			t += Time.fixedDeltaTime;
-			sprite.GetComponent<Image>().fillAmount = 1 - t/sectionDuration;
+			image.GetComponent<Image>().fillAmount = 1 - t/sectionDuration;
 			yield return new WaitForEndOfFrame();
 		}
 	}
 
 	void Reset() {
-		sprite.GetComponent<Image>().fillOrigin = 0;
-		sprite.GetComponent<Image>().fillAmount = 0;
+		image.GetComponent<Image>().fillOrigin = 0;
+		image.GetComponent<Image>().fillAmount = 0;
 	}
 }

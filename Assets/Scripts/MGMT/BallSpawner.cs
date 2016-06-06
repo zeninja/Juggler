@@ -21,5 +21,6 @@ public class BallSpawner : MonoBehaviour {
 
 	void SpawnBall() {
 		GameManager.GetInstance().LaunchBall();
+
 	}
 }
