@@ -25,12 +25,30 @@ public class AdManager : MonoBehaviour {
 	public static int adThreshold = 3;
 	public static int currentPlays = 0;
 	string numPlays = "numPlays";
+	string hasMadePurchase = "hasMadePurchase";
+
+	public bool debug;
 
 	// Use this for initialization
 	void Start () {
 		#if UNITY_STANDALONE_IOS
-		InitAds();
-		Admob.Instance().setTesting(true);
+		if (PlayerPrefs.HasKey(hasMadePurchase)) {
+			useAds = PlayerPrefs.GetInt(hasMadePurchase) == 1;
+		} else {
+			PlayerPrefs.SetInt(hasMadePurchase, 0);
+			useAds = true;
+		}
+
+		if (PlayerPrefs.HasKey(numPlays)) {
+			currentPlays = PlayerPrefs.GetInt(numPlays);
+		} else {
+			PlayerPrefs.SetInt(numPlays, 0);
+		}
+
+		if (useAds) {
+			InitAds();
+			Admob.Instance().setTesting(true);
+		}
 		#endif
 	}
 
@@ -44,34 +62,35 @@ public class AdManager : MonoBehaviour {
 
 	void TryToShowAd()
 	{
+		if(debug) { return; }
+
 		#if UNITY_STANDALONE_IOS
-		if (Admob.Instance().isInterstitialReady()) {
-			Admob.Instance().showInterstitial();
-	    } else {
-	    	Admob.Instance().loadInterstitial();
+		if (useAds) {
+			if (Admob.Instance().isInterstitialReady()) {
+				Admob.Instance().showInterstitial();
+		    } else {
+		    	Admob.Instance().loadInterstitial();
+		    }
 	    }
 		#endif
 	}
 
 	void TryToShowVideoAd() {
+		if(debug) { return; }
+
 		#if UNITY_STANDALONE_IOS
-		if (Admob.Instance().isRewardedVideoReady()) {
-			Admob.Instance().showRewardedVideo();
-	    } else {
-			Admob.Instance().loadRewardedVideo("ca-app-pub-2916476108966190/1617668865");
+		if (useAds) {
+			if (Admob.Instance().isRewardedVideoReady()) {
+				Admob.Instance().showRewardedVideo();
+		    } else {
+				Admob.Instance().loadRewardedVideo("ca-app-pub-2916476108966190/1617668865");
+		    }
 	    }
 		#endif
 	}
 
 	public void CheckAd() {
 		currentPlays++;
-
-//		if(currentPlays == 1) {
-//			TryToShowAd();
-//		}
-//		if(currentPlays == 2) {
-//			TryToShowVideoAd();
-//		}
 
 		if (currentPlays == adThreshold) {
 			currentPlays = 0;

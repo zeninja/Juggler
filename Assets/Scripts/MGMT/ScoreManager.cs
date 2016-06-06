@@ -20,7 +20,8 @@ public class ScoreManager : MonoBehaviour {
 
 	string highScoreKey = "highScore";
 
-	public Leaderboards leaderboard;
+	public GameCenter leaderboard;
+	public ColorSchemeManager colorSchemeManager;
 
 	private static ScoreManager instance;
 	private static bool instantiated;
@@ -78,6 +79,7 @@ public class ScoreManager : MonoBehaviour {
 	}
 
 	public void HandleGameOver() {
+		CheckAchievementProgress();
 		StartCoroutine(SetHighScoreAndReset());
 	}
 
@@ -86,6 +88,20 @@ public class ScoreManager : MonoBehaviour {
 		yield return StartCoroutine(Reset());
 	}
 
+	void CheckAchievementProgress() {
+		if(score >= 10) {
+			GameCenter.SetComplete(GameCenter.get10Pts);
+		}
+
+		if(score >= 100) {
+			GameCenter.SetComplete(GameCenter.get100Pts);
+		}
+
+		if(score >= 50 && HandManager.totalHandCount == 1) {
+			GameCenter.SetComplete(GameCenter.get50Pts1Hand);
+		}
+	}
+	
 	IEnumerator SetHighScore() {
 		// Update the saved high score and animate the new high score
 		if (score > highScore) {

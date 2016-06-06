@@ -97,7 +97,7 @@ public class GameManager : MonoBehaviour {
 		if(gameOver) { return; }
 
 		GameObject newBall = Instantiate(ball);
-		newBall.transform.position = new Vector3(Random.Range(-2.3f, 2.3f), -2, 0);
+		newBall.transform.position = new Vector2(Random.Range(-2.3f, 2.3f), -2);
 		newBall.GetComponent<Ball>().Launch();
 		newBall.GetComponent<Ball>().zDepth = -1;
 		newBall.GetComponent<Ball>().SetDepth();

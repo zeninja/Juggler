@@ -22,15 +22,15 @@ public class GrabControllerFlick : MonoBehaviour {
 	Touch myTouch;
 
 	void Update() {
+		throwDirection = dragEnd - dragStart;
+		FindTouch();
+		handPos = FindHandPos();
+
 		#if !UNITY_IOS || UNITY_EDITOR || UNITY_STANDALONE_OSX
 		ManageInput();
 		#else 
 		ManageTouchInput();
 		#endif
-
-		throwDirection = dragEnd - dragStart;
-		FindTouch();
-		handPos = FindHandPos();
 	}
 
 	void FindTouch() {
@@ -44,15 +44,15 @@ public class GrabControllerFlick : MonoBehaviour {
 	}
 
 	Vector2 FindHandPos() {
-		Vector2 handPos;
+		Vector2 currentHandPos;
 
 		#if !UNITY_IOS || UNITY_EDITOR || UNITY_STANDALONE_OSX
-		handPos = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition);
+		currentHandPos = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		#else
-		handPos = (Vector2)Camera.main.ScreenToWorldPoint(myTouch.position);
+		currentHandPos = (Vector2)Camera.main.ScreenToWorldPoint(myTouch.position);
 		#endif
 
-		return handPos;
+		return currentHandPos;
 	}
 
 	void ManageInput() {
@@ -66,7 +66,6 @@ public class GrabControllerFlick : MonoBehaviour {
 				dragEnd = handPos;
 
 				UpdateLine();
-//				UpdateRotation();
 			}
 		}
 
@@ -88,7 +87,6 @@ public class GrabControllerFlick : MonoBehaviour {
 				dragEnd = handPos;
 
 				UpdateLine();
-//				UpdateRotation();
 			}
 		}
 
@@ -100,17 +98,33 @@ public class GrabControllerFlick : MonoBehaviour {
 	}
 
 	void UpdateLine() {
-		ball.GetComponent<LineManager>().throwVector = throwDirection;
+		if (ball != null) {
+			ball.GetComponent<LineManager>().throwVector = throwDirection;
+		}
 	}
 
 	void OnTriggerEnter2D(Collider2D other) {
-		// Grab any balls we hit (as long as we're not already holding one)
-		if (other.CompareTag("Ball") && !holdingBall) {
+		// Grab the ball "closest" to the player (has the highest z depth) as long as we're not already holding a ball
+		if(!holdingBall) {
+			int layerMask = 1 << LayerMask.NameToLayer("Balls");
+			Collider2D[] overlappingBalls = Physics2D.OverlapCircleAll(transform.position, .6f, layerMask);
 
-			GameObject newBall = other.gameObject;
+			int selectedBallIndex = -1;
+			int highestZDepth = -1000;
 
-			if(!newBall.GetComponent<Ball>().held && newBall.GetComponent<Ball>().canBeCaught) {
-				ball = other.gameObject;
+			for(int i = 0; i < overlappingBalls.Length; i++) {
+				if (overlappingBalls[i].GetComponent<Ball>().canBeCaught && !overlappingBalls[i].GetComponent<Ball>().held) {
+					if (overlappingBalls[i].GetComponent<Ball>().zDepth > highestZDepth) {
+						selectedBallIndex = i;
+						highestZDepth = overlappingBalls[i].GetComponent<Ball>().zDepth;
+					}
+				}
+			}
+
+			if(selectedBallIndex >= 0) {
+				GameObject newBall = overlappingBalls[selectedBallIndex].gameObject;
+				
+				ball = newBall;
 				GrabBall();
 				ScoreManager.GetInstance().UpdateScore();
 			}
@@ -130,7 +144,6 @@ public class GrabControllerFlick : MonoBehaviour {
 		GameManager.GetInstance().AdjustBallDepth(ball);
 
 		ring.StartSpread();
-
 	}
 
 	void ThrowBall() {
@@ -141,6 +154,7 @@ public class GrabControllerFlick : MonoBehaviour {
 			ball.GetComponent<Rigidbody2D>().gravityScale = .75f;
 			ball.GetComponent<Ball>().held = false;
 			ball.GetComponent<Ball>().ActivateRing();
+			ball.GetComponent<Ball>().ResetArrow();
 			ball.transform.parent = null;
 
 			ball = null;
@@ -157,7 +171,6 @@ public class GrabControllerFlick : MonoBehaviour {
 			Gizmos.DrawLine(dragStart, dragEnd);
 
 			Gizmos.DrawWireSphere(dragEnd, .5f);
-
 		}
 	}
 
@@ -166,8 +179,4 @@ public class GrabControllerFlick : MonoBehaviour {
 		HandManager.RemoveHand(id);
 		Destroy(gameObject);
 	}
-
-//	void OnApplicationExit() {
-//		HandManager.RemoveHand(id);
-//	}
 }

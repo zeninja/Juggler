@@ -2,10 +2,15 @@
 using System.Collections;
 using UnityEngine.SocialPlatforms;
 using UnityEngine.UI;
+using System.Runtime.InteropServices;
 
-public class Leaderboards : MonoBehaviour {
+public class GameCenter : MonoBehaviour {
 
-	public string leaderboardID;
+	string leaderboardID = "Leaderboard_Test1";
+
+	public static string get10Pts	   = "Get10Pts";		// achievement ID in itunes Connect
+	public static string get100Pts	   = "Get100Pts";		// achievement ID in itunes Connect
+	public static string get50Pts1Hand = "LookMaOneHand";	// achievement ID in itunes Connect
 
     void Start () {
         // Authenticate and register a ProcessAuthentication callback
@@ -35,14 +40,6 @@ public class Leaderboards : MonoBehaviour {
             Debug.Log ("Error: no achievements found");
         else
             Debug.Log ("Got " + achievements.Length + " achievements");
-     
-        // You can also call into the functions like this
-        Social.ReportProgress ("Achievement01", 100.0, result => {
-            if (result)
-                Debug.Log ("Successfully reported achievement progress");
-            else
-                Debug.Log ("Failed to report achievement");
-        });
     }
 
 	void ReportScore (long score, string leaderboardID) {
@@ -54,6 +51,7 @@ public class Leaderboards : MonoBehaviour {
 
 	public void ShowLeaderboard() {
 		Social.ShowLeaderboardUI();
+//		Social.ShowAchievementsUI();
 	}
 
 	public void SetHighScore(int newScore) {
@@ -62,7 +60,16 @@ public class Leaderboards : MonoBehaviour {
 
 	void Update() {
 		// TODO: UPDATE THIS TO BE A DIRECT CALL RATHER THAN UPDATE
-		GetComponent<Image>().enabled = GameManager.gameOver || !GameManager.gameStarted;
-		GetComponent<Button>().enabled = GameManager.gameOver || !GameManager.gameStarted;
+		GetComponent<Image>().enabled = !GameManager.gameOver && !GameManager.gameStarted;
+		GetComponent<Button>().enabled = !GameManager.gameOver && !GameManager.gameStarted;
+	}
+
+	[DllImport("__Internal")]
+	private static extern void _ReportAchievement( string achievementID, float progress );
+
+	public static void SetComplete(string achievementID) {
+		#if UNITY_STANDALONE_IOS
+	    _ReportAchievement(achievementID, 100.0f);
+	    #endif
 	}
 }

@@ -35,7 +35,11 @@ public class LineManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		dragStrength = throwVector.magnitude;
+		if(ball.held) {
+			dragStrength = throwVector.magnitude;
+		} else {
+			dragStrength = 0;
+		}
 
 		UpdateRotation();
 		UpdateMesh();
@@ -45,7 +49,6 @@ public class LineManager : MonoBehaviour {
 
 		line.GetComponent<MeshRenderer>().enabled = ball.held;
 		arrow.GetComponent<SpriteRenderer>().enabled = ball.held;
-
 	}
 
 	void UpdateRotation() {

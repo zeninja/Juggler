@@ -52,45 +52,54 @@ public class ColorSchemeManager : MonoBehaviour {
 	    {
 	        // Perform your "shaking actions" here, with suitable guards in the if check above, if necessary to not, to not fire again if they're already being performed.
 //	        Debug.Log("Shake event detected at time "+Time.time);	
-	        SetNewColorScheme();
-	        nextShakeTime = Time.time + shakeDelay;
+
+			if(!GameManager.gameOver && !GameManager.gameStarted) {
+		        SetNewColorScheme();
+		        nextShakeTime = Time.time + shakeDelay;
+	        }
 	    }
+
+	    DebugColorScheme();
+	}
+
+	void DebugColorScheme() {
+		if (Input.GetKeyDown(KeyCode.M)) {
+			SetNewColorScheme();
+		}
 	}
 
 	public void SetNewColorScheme() {
-		if (!GameManager.gameOver && !GameManager.gameStarted) {
-			int randomSchemeIndex = Random.Range(0, colorSchemes.Length);
-			newScheme = colorSchemes[randomSchemeIndex];
+		int randomSchemeIndex = Random.Range(0, colorSchemes.Length);
+		newScheme = colorSchemes[randomSchemeIndex];
 
-			if(newScheme.colors.Length < 3) {
-				Debug.LogError("Color scheme " + newScheme.name + " does not have enough colors!");
-				return;
-			}
-
-			int background = 0, ball = 0, score = 0;
-
-			background = Random.Range(0, newScheme.colors.Length);
-
-			ball = Random.Range(0, newScheme.colors.Length);
-			while (ball == background) {
-				ball = Random.Range(0, newScheme.colors.Length);
-			}
-
-			score = Random.Range(0, newScheme.colors.Length);
-			while(score == ball || score == background) {
-				score = Random.Range(0, newScheme.colors.Length);
-			}
-
-			bgColor    = newScheme.colors[background];
-			ballColor  = newScheme.colors[ball];
-			scoreColor = newScheme.colors[score];
-
-			for(int i = 0; i < colorSchemeUtilities.Length; i++) {
-				colorSchemeUtilities[i].UpdateColor();
-			}
-
-			ScoreManager.GetInstance().SetColors();
+		if(newScheme.colors.Length < 3) {
+			Debug.LogError("Color scheme " + newScheme.name + " does not have enough colors!");
+			return;
 		}
+
+		int background = 0, ball = 0, score = 0;
+
+		background = Random.Range(0, newScheme.colors.Length);
+
+		ball = Random.Range(0, newScheme.colors.Length);
+		while (ball == background) {
+			ball = Random.Range(0, newScheme.colors.Length);
+		}
+
+		score = Random.Range(0, newScheme.colors.Length);
+		while(score == ball || score == background) {
+			score = Random.Range(0, newScheme.colors.Length);
+		}
+
+		bgColor    = newScheme.colors[background];
+		ballColor  = newScheme.colors[ball];
+		scoreColor = newScheme.colors[score];
+
+		for(int i = 0; i < colorSchemeUtilities.Length; i++) {
+			colorSchemeUtilities[i].UpdateColor();
+		}
+
+		ScoreManager.GetInstance().SetColors();
 	}
 
 	void SetDefaultColors() {

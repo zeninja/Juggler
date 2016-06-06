@@ -7,6 +7,8 @@ public class HandManager : MonoBehaviour {
 	public GameObject handPrefab;
 	static Dictionary<int, GameObject> hands = new Dictionary<int, GameObject>();
 
+	public static int totalHandCount;
+
 	private static HandManager instance;
 	private static bool instantiated;
 
@@ -23,8 +25,19 @@ public class HandManager : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+		#if UNITY_EDITOR
+		ManageInput();
+		#endif
+
 		ManageTouches();
 		DebugHand();
+	}
+
+
+	void ManageInput() {
+		if (Input.GetMouseButtonDown(0)) {
+			SpawnHand(0);
+		}
 	}
 
 	void ManageTouches() {
@@ -35,20 +48,24 @@ public class HandManager : MonoBehaviour {
 		}
 	}
 
+
 	void SpawnHand(int id) {
 		GameObject hand = Instantiate(handPrefab) as GameObject;
 		hand.GetComponent<GrabControllerFlick>().id = id;
-		hands.Add(id, hand);
+
+		if(!hands.ContainsKey(id)) {
+			hands.Add(id, hand);
+		} else {
+			Destroy(hands[id]);
+			hands.Remove(id);
+			hands.Add(id, hand);
+		}
+
+		totalHandCount = Mathf.Max(totalHandCount, hands.Count);
 	}
 
 	public static void RemoveHand(int id) {
 		hands.Remove(id);
-	}
-
-	void HandleGameOver() {
-		for (int i = 0; i < hands.Count; i++) {
-			hands[i].GetComponent<GrabControllerFlick>().HandleDeath();
-		}
 	}
 
 	bool handSpawned;

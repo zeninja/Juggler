@@ -15,7 +15,7 @@ public class Ball : MonoBehaviour {
 
 	[System.NonSerialized]
 	public bool canBeCaught;
-//	[System.NonSerialized]
+	[System.NonSerialized]
 	public bool held;
 
 	public float launchVelocity = 10;
@@ -93,6 +93,10 @@ public class Ball : MonoBehaviour {
 		ring.enabled = held;
 		ringBG.enabled = held;
 	}
+
+	public void ResetArrow() {
+		
+	}
 	
 	// Update is called once per frame
 	void Update () {
@@ -145,9 +149,10 @@ public class Ball : MonoBehaviour {
 
 	public void HandleDeath() {
 		rb.velocity = Vector2.zero;
+		rb.gravityScale = 0;
 //		gameObject.ShakeScale(new Vector3(1, 1, 0) * .5f, .5f, 0);
 		StartCoroutine(ShakeScale());
-		chevron.ChangeSpriteToDead();
+		chevron.HandleDeath();
 
 		Invoke("Die", .5f);
 	}

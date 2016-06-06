@@ -7,8 +7,12 @@ public class ColorSchemeUtility : MonoBehaviour {
 	public enum ColorSource { background, score, ball }
 	public ColorSource myColorSource;
 
-	[System.NonSerialized]
+//	[System.NonSerialized]
 	public Color currentColor;
+
+	void Update() {
+		
+	}
 
 	public void UpdateColor() {
 		switch(myColorSource) {
