@@ -58,6 +58,8 @@ public class OffscreenChevron : MonoBehaviour {
 	}
 
 	void Die() {
-		Destroy(gameObject);
+		transform.parent = ball.transform;
+		transform.localPosition = Vector2.zero;
+//		Destroy(gameObject);
 	}
 }

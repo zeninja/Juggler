@@ -12,8 +12,16 @@ public class Ring : MonoBehaviour {
 		spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
 	}
 
-	public void StartSpread() {
+	public void SetRotation(Vector3 targetPos) {
+		Vector3 diff = targetPos - transform.position;
+        diff.Normalize();
+ 
+        float rot_z = Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0f, 0f, rot_z - 90);
+	}
 
+	public void StartSpread() {
+		
 		StartCoroutine(Spread());
 	}
 
@@ -23,9 +31,9 @@ public class Ring : MonoBehaviour {
 			yield return new WaitForEndOfFrame();
 		}
 
-		#if !UNITY_EDITOR
+//		#if !UNITY_EDITOR
 		transform.parent = null;
-		#endif
+//		#endif
 
 		for (int i = 0; i < spriteRenderers.Length; i++) {
 			spriteRenderers[i].enabled = true;
@@ -37,10 +45,11 @@ public class Ring : MonoBehaviour {
 			transform.localScale = Vector3.one * (1 + targetScaleMultiplier * t);
 			yield return new WaitForEndOfFrame();
 		}
-		Reset();
-		#if !UNITY_EDITOR
+//		Reset();
+//		#if !UNITY_EDITOR
+
 		Destroy(gameObject);
-		#endif
+//		#endif
 	}
 
 	void Reset() {

@@ -6,9 +6,11 @@ public class Explosion : MonoBehaviour {
 	public float explosionDuration = .3f;
 	public AnimationCurve explosionCurve;
 
+	Transform ball;
+
 	// Use this for initialization
 	void Start () {
-	
+		ball = transform.parent;
 	}
 	
 	// Update is called once per frame
@@ -38,6 +40,7 @@ public class Explosion : MonoBehaviour {
 	}
 
 	void Die() {
-		Destroy(gameObject);
+//		Destroy(gameObject);
+		transform.parent = ball;
 	}
 }

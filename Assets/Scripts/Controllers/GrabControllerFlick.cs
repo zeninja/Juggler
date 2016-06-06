@@ -144,6 +144,7 @@ public class GrabControllerFlick : MonoBehaviour {
 
 		GameManager.GetInstance().AdjustBallDepth(ball);
 
+		ring.SetRotation(ball.transform.position);
 		ring.StartSpread();
 	}
 

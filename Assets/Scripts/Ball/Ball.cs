@@ -170,7 +170,8 @@ public class Ball : MonoBehaviour {
 	void Die() {
 		explosion.transform.parent = null;
 		explosion.GetComponent<Explosion>().Trigger();
-		Destroy(gameObject);
+//		Destroy(gameObject);
+		ObjectPool.instance.PoolObject(gameObject);
 	}
 
 	public void HandleGameOver() {
