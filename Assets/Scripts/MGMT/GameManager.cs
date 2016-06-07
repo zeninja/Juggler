@@ -69,8 +69,11 @@ public class GameManager : MonoBehaviour {
 	void SpawnFirstBall() {
 		gameStarted = true;
 
-		GameObject newBall = Instantiate(ball);
+//		GameObject newBall = Instantiate(ball);
+		GameObject newBall = ObjectPool.instance.GetObjectForType("Ball", false);
+
 		newBall.transform.position = new Vector3(0, 6, 0);
+		newBall.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
 
 		newBall.GetComponent<Ball>().zDepth = -1;
 		newBall.GetComponent<Ball>().SetDepth();
@@ -96,8 +99,12 @@ public class GameManager : MonoBehaviour {
 	public void LaunchBall() {
 		if(gameOver) { return; }
 
-		GameObject newBall = Instantiate(ball);
+//		GameObject newBall = Instantiate(ball);
+		GameObject newBall = ObjectPool.instance.GetObjectForType("Ball", false);
+
 		newBall.transform.position = new Vector2(Random.Range(-2.3f, 2.3f), -2);
+		newBall.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+
 		newBall.GetComponent<Ball>().Launch();
 		newBall.GetComponent<Ball>().zDepth = -1;
 		newBall.GetComponent<Ball>().SetDepth();

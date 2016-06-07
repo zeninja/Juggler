@@ -3,25 +3,30 @@ using System.Collections;
 
 public class Ring : MonoBehaviour {
 
+	Transform hand;
+
 	SpriteRenderer[] spriteRenderers;
 	public float duration = .25f;
 	public float targetScaleMultiplier = 2.5f;
 
 	// Use this for initialization
 	void Start () {
+		hand = transform.parent;
 		spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
 	}
 
 	public void SetRotation(Vector3 targetPos) {
-		Vector3 diff = targetPos - transform.position;
-        diff.Normalize();
- 
-        float rot_z = Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0f, 0f, rot_z - 90);
+//		Vector3 diff = targetPos - hand.position;
+//        diff.Normalize();
+// 
+//        float rot_z = Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg;
+//
+//		for (int i = 0; i < transform.childCount; i++) {
+//			transform.GetChild(i).rotation = Quaternion.Euler(rot_z, 0, transform.GetChild(i).rotation.eulerAngles.z);
+//		}
 	}
 
 	public void StartSpread() {
-		
 		StartCoroutine(Spread());
 	}
 
@@ -31,9 +36,7 @@ public class Ring : MonoBehaviour {
 			yield return new WaitForEndOfFrame();
 		}
 
-//		#if !UNITY_EDITOR
 		transform.parent = null;
-//		#endif
 
 		for (int i = 0; i < spriteRenderers.Length; i++) {
 			spriteRenderers[i].enabled = true;
@@ -45,19 +48,12 @@ public class Ring : MonoBehaviour {
 			transform.localScale = Vector3.one * (1 + targetScaleMultiplier * t);
 			yield return new WaitForEndOfFrame();
 		}
-//		Reset();
-//		#if !UNITY_EDITOR
 
-		Destroy(gameObject);
-//		#endif
-	}
-
-	void Reset() {
-		#if !UNITY_STANDALONE_IOS
 		for (int i = 0; i < spriteRenderers.Length; i++) {
 			spriteRenderers[i].enabled = false;
 		}
+
+		transform.parent = hand;
 		transform.localScale = Vector3.one;
-		#endif
 	}
 }

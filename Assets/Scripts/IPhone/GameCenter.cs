@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.SocialPlatforms;
 using UnityEngine.UI;
 using System.Runtime.InteropServices;
+using UnityEngine.SocialPlatforms.GameCenter;
 
 public class GameCenter : MonoBehaviour {
 
@@ -15,7 +16,6 @@ public class GameCenter : MonoBehaviour {
     void Start () {
         // Authenticate and register a ProcessAuthentication callback
         // This call needs to be made before we can proceed to other calls in the Social API
-
         if(!Social.localUser.authenticated) {
 	        Social.localUser.Authenticate (ProcessAuthentication);
         }
@@ -26,6 +26,10 @@ public class GameCenter : MonoBehaviour {
     void ProcessAuthentication (bool success) {
         if (success) {
             Debug.Log ("Authenticated, checking achievements");
+
+			GameCenterPlatform.ResetAllAchievements((resetResult) => {
+				Debug.Log( (resetResult) ? "Reset done." : "Reset failed." );
+			});
 
             // Request loaded achievements, and register a callback for processing them
             Social.LoadAchievements (ProcessLoadedAchievements);

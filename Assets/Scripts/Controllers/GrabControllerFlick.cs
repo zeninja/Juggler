@@ -178,6 +178,7 @@ public class GrabControllerFlick : MonoBehaviour {
 	public void HandleDeath() {
 		// public so that the hand manager can call this when the game ends if need be
 		HandManager.RemoveHand(id);
-		Destroy(gameObject);
+		ObjectPool.instance.PoolObject(gameObject);
+		transform.position = new Vector2(0, 100);
 	}
 }

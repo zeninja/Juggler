@@ -17,9 +17,12 @@ public class OffscreenChevron : MonoBehaviour {
 	SpriteRenderer spriteRenderer;
 	public SpriteRenderer background;
 
-	// Use this for initialization
-	void Start () {
+	void Start() {
 		spriteRenderer = GetComponent<SpriteRenderer>();
+	}
+
+	// Use this for initialization
+	void OnEnable () {
 		transform.parent = null;
 	}
 
@@ -60,6 +63,7 @@ public class OffscreenChevron : MonoBehaviour {
 	void Die() {
 		transform.parent = ball.transform;
 		transform.localPosition = Vector2.zero;
-//		Destroy(gameObject);
+		spriteRenderer.enabled = false;
+		background.enabled = false;
 	}
 }

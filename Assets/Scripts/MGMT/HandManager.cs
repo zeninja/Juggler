@@ -30,7 +30,6 @@ public class HandManager : MonoBehaviour {
 		#endif
 
 		ManageTouches();
-		DebugHand();
 	}
 
 
@@ -48,15 +47,14 @@ public class HandManager : MonoBehaviour {
 		}
 	}
 
-
 	void SpawnHand(int id) {
-		GameObject hand = Instantiate(handPrefab) as GameObject;
+		GameObject hand = ObjectPool.instance.GetObjectForType("Hand", false);
 		hand.GetComponent<GrabControllerFlick>().id = id;
 
 		if(!hands.ContainsKey(id)) {
 			hands.Add(id, hand);
 		} else {
-			Destroy(hands[id]);
+			ObjectPool.instance.PoolObject(hands[id]);
 			hands.Remove(id);
 			hands.Add(id, hand);
 		}
@@ -66,15 +64,5 @@ public class HandManager : MonoBehaviour {
 
 	public static void RemoveHand(int id) {
 		hands.Remove(id);
-	}
-
-	bool handSpawned;
-	void DebugHand() {
-		#if UNITY_EDITOR || UNITY_STANDALONE_OSX
-		if (Input.GetMouseButton(0) && !handSpawned) {
-			Instantiate(handPrefab);
-			handSpawned = true;
-		}
-		#endif
 	}
 }

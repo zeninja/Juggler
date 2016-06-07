@@ -46,6 +46,9 @@ public class LineManager : MonoBehaviour {
 		UpdateArrow();
 
 		mat.mainTextureScale = new Vector2(1, dragStrength * lineLengthModifier * scalar);
+
+		arrow.GetComponent<SpriteRenderer>().enabled = ball.held;
+		line.GetComponent<MeshRenderer>().enabled = ball.held;
 	}
 
 	void UpdateRotation() {

@@ -78,7 +78,7 @@ public class ScoreManager : MonoBehaviour {
 		float currentPulseAmount = scorePulseAmount;
 
 		if(score == 5 || score == 15 || score % 25 == 0) {
-			StartCoroutine(FlashText(animationDuration));
+			StartCoroutine(FlashText(animationDuration * 2));
 //			currentPulseAmount = 1.25f;
 		} else {
 

@@ -33,28 +33,29 @@ public class Ball : MonoBehaviour {
 	public float flashDuration = .15f;
 	public int zDepth;
 
-
-	// Use this for initialization
-	void Awake () {
+	void Awake() {
 		explosion = transform.FindChild("Explosion").gameObject;
 		chevron = transform.FindChild("Chevron").gameObject.GetComponent<OffscreenChevron>();
 		chevron.ball = gameObject;
 
 		rb = GetComponent<Rigidbody2D>();
 
+	}
+
+	void Start() {
 		SetColor();
 	}
 
+	void OnEnable() {
+		SetColor();
+		lastPos = transform.position;
+	}
+
 	public void Launch() {
+		lastPos = transform.position;
 		rb.velocity = Vector2.up * launchVelocity;
 		canBeCaught = false;
 	}
-
-//	public void SetColor(Color newColor) {
-//		originalColor = newColor;
-//		sprite.GetComponent<SpriteRenderer>().color = originalColor;
-//		chevron.SetColor(originalColor);
-//	}
 
 	void SetColor() {
 		sprite.GetComponent<ColorSchemeUtility>().UpdateColor();
@@ -62,9 +63,6 @@ public class Ball : MonoBehaviour {
 
 		ring.GetComponent<ColorSchemeUtility>().UpdateColor();
 		ringBG.GetComponent<ColorSchemeUtility>().UpdateColor();
-
-//		sprite.color	 = sprite.GetComponent<ColorSchemeUtility>().currentColor;
-//		background.color = background.GetComponent<ColorSchemeUtility>().currentColor;
 
 		originalColor = sprite.color;
 		chevron.SetColors();
@@ -93,6 +91,8 @@ public class Ball : MonoBehaviour {
 		ring.enabled = held;
 		ringBG.enabled = held;
 	}
+
+	Vector2 lastVelocity;
 	
 	// Update is called once per frame
 	void Update () {
@@ -114,12 +114,20 @@ public class Ball : MonoBehaviour {
 
 	void SquashAndStretch() {
 		// Make the balls squash and stretch to show/exaggerate motion
+
 		if((Vector3)velocity != Vector3.zero) {
 			Vector3 diff = velocity.normalized;
 	         
 			float rot_z = Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg;
 	        transform.rotation = Quaternion.Euler(0f, 0f, rot_z - 90);
         }
+
+//		if((Vector3)rb.velocity != Vector3.zero) {
+//			Vector3 diff = rb.velocity.normalized;
+//	         
+//			float rot_z = Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg;
+//	        transform.rotation = Quaternion.Euler(0f, 0f, rot_z - 90);
+//        }
 
 		art.transform.localScale = new Vector2(1 - velocity.magnitude * squashSize, 1 + velocity.magnitude * squashSize);
 
@@ -146,11 +154,8 @@ public class Ball : MonoBehaviour {
 	public void HandleDeath() {
 		rb.velocity = Vector2.zero;
 		rb.gravityScale = 0;
-//		gameObject.ShakeScale(new Vector3(1, 1, 0) * .5f, .5f, 0);
 		StartCoroutine(ShakeScale());
 		chevron.HandleDeath();
-
-		Invoke("Die", .5f);
 	}
 
 	public AnimationCurve shakeCurve;
@@ -165,22 +170,32 @@ public class Ball : MonoBehaviour {
 
 			yield return new WaitForEndOfFrame();
 		}
+		Die();
 	}
 
 	void Die() {
 		explosion.transform.parent = null;
 		explosion.GetComponent<Explosion>().Trigger();
-//		Destroy(gameObject);
+
+		StartCoroutine(ResetAndPool());
+	}
+
+	IEnumerator ResetAndPool() {
+		rb.velocity = Vector2.zero;
+		rb.gravityScale = .75f;
+		lastPos = transform.position;
+		velocity = Vector2.zero;
+		transform.localScale = Vector3.one;
+		transform.rotation = Quaternion.identity;
+		yield return new WaitForEndOfFrame();
 		ObjectPool.instance.PoolObject(gameObject);
+
+		transform.position = new Vector2(0, 6);
+		lastPos = transform.position;
 	}
 
 	public void HandleGameOver() {
 		// Explode
 		HandleDeath();
-	}
-
-	void OnDrawGizmos() {
-		Gizmos.color = Color.white;
-		Gizmos.DrawLine(transform.position, (Vector2)transform.position + velocity * 5);
 	}
 }

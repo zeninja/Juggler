@@ -21,9 +21,6 @@ public class Explosion : MonoBehaviour {
 	public void Trigger() {
 		GetComponent<SpriteRenderer>().enabled = true;
 		StartCoroutine("ScaleUpAndDown");
-
-//		gameObject.ScaleTo(Vector3.one, explosionDuration/2, 0);
-//		gameObject.ScaleTo(Vector3.zero, explosionDuration/2, explosionDuration/2);
 		Invoke("Die", explosionDuration);
 	}
 
@@ -32,15 +29,16 @@ public class Explosion : MonoBehaviour {
 		float t = 0; 
 
 		while (t < 1) {
-			t += Time.deltaTime/explosionDuration;
+			t += Time.fixedDeltaTime/explosionDuration;
 			transform.localScale = Vector3.one * explosionCurve.Evaluate(t);
 
 			yield return new WaitForEndOfFrame();
 		}
+		transform.localScale = Vector2.zero;
 	}
 
 	void Die() {
-//		Destroy(gameObject);
 		transform.parent = ball;
+		transform.localPosition = Vector2.zero;
 	}
 }

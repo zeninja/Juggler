@@ -30,7 +30,8 @@ public class ObjectPool : MonoBehaviour
 	
 	void Awake ()
 	{
-		instance = this;	
+		instance = this;
+		Setup();	
 	}
 
 	void OnLevelWasLoaded() {
