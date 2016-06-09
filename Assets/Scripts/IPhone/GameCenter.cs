@@ -27,10 +27,6 @@ public class GameCenter : MonoBehaviour {
         if (success) {
             Debug.Log ("Authenticated, checking achievements");
 
-			GameCenterPlatform.ResetAllAchievements((resetResult) => {
-				Debug.Log( (resetResult) ? "Reset done." : "Reset failed." );
-			});
-
             // Request loaded achievements, and register a callback for processing them
             Social.LoadAchievements (ProcessLoadedAchievements);
         }
