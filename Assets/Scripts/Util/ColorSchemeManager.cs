@@ -10,6 +10,9 @@ public class ColorSchemeManager : MonoBehaviour {
 	public static Color ballColor;
 	public static Color scoreColor;
 
+	public Shader backgroundShader;
+	public static Shader bgShader;
+
 	[System.Serializable]
 	public class ColorScheme {
 		public string name;
@@ -34,10 +37,12 @@ public class ColorSchemeManager : MonoBehaviour {
 	public ColorScheme newScheme;
 
 	// Use this for initialization
-	void Start () {
+	void Awake () {
 		lowPassFilterFactor =  accelerometerUpdateInterval / lowPassKernelWidthInSeconds;
 		shakeDetectionThreshold *= shakeDetectionThreshold;
 	    lowPassValue = Input.acceleration;
+
+	    bgShader = backgroundShader;
 
 	    SetDefaultColors();
 	}
@@ -95,6 +100,9 @@ public class ColorSchemeManager : MonoBehaviour {
 		ballColor  = newScheme.colors[ball];
 		scoreColor = newScheme.colors[score];
 
+		GetComponent<BackgroundGradientManager>().SetBackgroundGradient();
+
+
 		for(int i = 0; i < colorSchemeUtilities.Length; i++) {
 			colorSchemeUtilities[i].UpdateColor();
 		}
@@ -108,8 +116,11 @@ public class ColorSchemeManager : MonoBehaviour {
 		ballColor  = newScheme.colors[1];
 		scoreColor = newScheme.colors[2];
 
+		GetComponent<BackgroundGradientManager>().SetBackgroundGradient();
+
 		for(int i = 0; i < colorSchemeUtilities.Length; i++) {
 			colorSchemeUtilities[i].UpdateColor();
 		}
+
 	}
 }

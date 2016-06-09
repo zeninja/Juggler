@@ -53,7 +53,7 @@ public class OffscreenChevron : MonoBehaviour {
 
 	public void SetColors() {
 		GetComponent<SpriteRenderer>().color = ColorSchemeManager.ballColor;
-		background.color = ColorSchemeManager.bgColor;
+		background.GetComponent<ColorSchemeUtility>().UpdateColor();
 	}
 
 	public void HandleDeath() {

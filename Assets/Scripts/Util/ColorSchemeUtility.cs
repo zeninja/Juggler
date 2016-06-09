@@ -7,7 +7,7 @@ public class ColorSchemeUtility : MonoBehaviour {
 	public enum ColorSource { background, score, ball }
 	public ColorSource myColorSource;
 
-//	[System.NonSerialized]
+	[System.NonSerialized]
 	public Color currentColor;
 
 	void Update() {
@@ -33,6 +33,11 @@ public class ColorSchemeUtility : MonoBehaviour {
 
 		if(GetComponent<SpriteRenderer>() != null) {
 			GetComponent<SpriteRenderer>().color = currentColor;
+
+			if (GetComponent<SpriteRenderer>().material.shader == ColorSchemeManager.bgShader) {
+				GetComponent<SpriteRenderer>().material.SetColor("_ColorLow", BackgroundGradientManager.botColor);
+				GetComponent<SpriteRenderer>().material.SetColor("_ColorHigh", BackgroundGradientManager.topColor);
+			}
 		}
 
 		if (GetComponent<Image>() != null) {
