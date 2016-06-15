@@ -58,18 +58,18 @@ public class GameCenter : MonoBehaviour {
 		ReportScore((long)newScore, leaderboardID);
 	}
 
-	void Update() {
-		// TODO: UPDATE THIS TO BE A DIRECT CALL RATHER THAN UPDATE
-		GetComponent<Image>().enabled = !GameManager.gameOver && !GameManager.gameStarted;
-		GetComponent<Button>().enabled = !GameManager.gameOver && !GameManager.gameStarted;
-	}
-
 	[DllImport("__Internal")]
 	private static extern void _ReportAchievement( string achievementID, float progress );
 
 	public static void SetComplete(string achievementID) {
-		#if UNITY_STANDALONE_IOS
+		#if !UNITY_EDITOR
 	    _ReportAchievement(achievementID, 100.0f);
 	    #endif
+	}
+
+	void Update() {
+		// TODO: UPDATE THIS TO BE A DIRECT CALL RATHER THAN UPDATE
+		GetComponent<Image>().enabled = !GameManager.gameOver && !GameManager.gameStarted;
+		GetComponent<Button>().enabled = !GameManager.gameOver && !GameManager.gameStarted;
 	}
 }

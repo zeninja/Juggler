@@ -26,6 +26,10 @@ public class ScoreManager : MonoBehaviour {
 	private static ScoreManager instance;
 	private static bool instantiated;
 
+	bool scoreFlashing;
+	public float flashDuration;
+	public int numFlashes = 5;
+
 	public static ScoreManager GetInstance ()
 	{
 		if (!instance) {
@@ -73,16 +77,18 @@ public class ScoreManager : MonoBehaviour {
 	}
 
 	IEnumerator AnimateScore() {
-		scoreDisplay.GetComponent<Text>().text = score.ToString();
+		if(!scoreFlashing) {
+			scoreDisplay.GetComponent<Text>().text = score.ToString();
+		}
 
 		float currentPulseAmount = scorePulseAmount;
 
 		if(score == 5 || score == 15 || score % 25 == 0) {
-			StartCoroutine(FlashText(animationDuration * 2));
-//			currentPulseAmount = 1.25f;
+			StartCoroutine(FlashText(flashDuration));
 		} else {
-
-			StartCoroutine(GetComponent<NewTweens>().PulseScale(scoreDisplay, Vector3.one * currentPulseAmount, animationDuration));
+			if (!scoreFlashing) {
+				StartCoroutine(GetComponent<NewTweens>().PulseScale(scoreDisplay, Vector3.one * currentPulseAmount, animationDuration));
+			}
 		}
 		yield return new WaitForEndOfFrame();
 	}
@@ -141,7 +147,6 @@ public class ScoreManager : MonoBehaviour {
 
 			yield return new WaitForSeconds(resetDuration/startingScore);
 		}
-//		nextBall.GetComponent<Text>().text = "Next ball in: 5";
 		GameManager.GetInstance().Restart();
 	}
 
@@ -159,16 +164,20 @@ public class ScoreManager : MonoBehaviour {
 	}
 
 	IEnumerator FlashText(float duration) {
+		scoreFlashing = true;
 		float timeFinished = Time.time + duration;
 
 		scoreDisplay.GetComponent<Text>().enabled = true;
 
 		while (Time.time < timeFinished) {
 			scoreDisplay.GetComponent<Text>().enabled = !scoreDisplay.GetComponent<Text>().enabled;
-			yield return new WaitForSeconds(duration/5);
+			yield return new WaitForSeconds(duration/numFlashes);
 		}
 //		scoreDisplay.GetComponent<Text>().enabled = false;
 		scoreDisplay.GetComponent<Text>().enabled = true;
+		scoreFlashing = false;
+
+		scoreDisplay.GetComponent<Text>().text = score.ToString();
 	}
 
 	IEnumerator RainbowNumber() {

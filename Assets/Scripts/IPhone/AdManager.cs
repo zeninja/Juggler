@@ -19,24 +19,24 @@ public class AdManager : MonoBehaviour {
 		return instance;
 	}
 
-	public bool useAds;
+	public static bool showAds = true;
 	#endregion
 
 	public static int adThreshold = 3;
 	public static int currentPlays = 0;
 	string numPlays = "numPlays";
-	string hasMadePurchase = "hasMadePurchase";
+	static string hasMadePurchase = "hasMadePurchase";
 
 	public bool debug;
 
 	// Use this for initialization
 	void Start () {
-		#if UNITY_STANDALONE_IOS
+		#if !UNITY_EDITOR
 		if (PlayerPrefs.HasKey(hasMadePurchase)) {
-			useAds = PlayerPrefs.GetInt(hasMadePurchase) == 1;
+			showAds = PlayerPrefs.GetInt(hasMadePurchase) == 0;
 		} else {
 			PlayerPrefs.SetInt(hasMadePurchase, 0);
-			useAds = true;
+			showAds = true;
 		}
 
 		if (PlayerPrefs.HasKey(numPlays)) {
@@ -45,11 +45,16 @@ public class AdManager : MonoBehaviour {
 			PlayerPrefs.SetInt(numPlays, 0);
 		}
 
-		if (useAds) {
+		if (showAds) {
 			InitAds();
 			Admob.Instance().setTesting(true);
 		}
+
+		Debug.Log("\n");
+		Debug.Log("SHOW ADS VALUE: " + showAds);
+		Debug.Log("\n");
 		#endif
+
 	}
 
 	void InitAds() {
@@ -64,8 +69,8 @@ public class AdManager : MonoBehaviour {
 	{
 		if(debug) { return; }
 
-		#if UNITY_STANDALONE_IOS
-		if (useAds) {
+		#if !UNITY_EDITOR
+		if (showAds) {
 			if (Admob.Instance().isInterstitialReady()) {
 				Admob.Instance().showInterstitial();
 		    } else {
@@ -75,19 +80,20 @@ public class AdManager : MonoBehaviour {
 		#endif
 	}
 
-	void TryToShowVideoAd() {
-		if(debug) { return; }
-
-		#if UNITY_STANDALONE_IOS
-		if (useAds) {
-			if (Admob.Instance().isRewardedVideoReady()) {
-				Admob.Instance().showRewardedVideo();
-		    } else {
-				Admob.Instance().loadRewardedVideo("ca-app-pub-2916476108966190/1617668865");
-		    }
-	    }
-		#endif
-	}
+	// not being used right now
+//	void TryToShowVideoAd() {
+//		if(debug) { return; }
+//
+//		#if !UNITY_EDITOR
+//		if (showAds) {
+//			if (Admob.Instance().isRewardedVideoReady()) {
+//				Admob.Instance().showRewardedVideo();
+//		    } else {
+//				Admob.Instance().loadRewardedVideo("ca-app-pub-2916476108966190/1617668865");
+//		    }
+//	    }
+//		#endif
+//	}
 
 	public void CheckAd() {
 		currentPlays++;
@@ -96,5 +102,12 @@ public class AdManager : MonoBehaviour {
 			currentPlays = 0;
 			TryToShowAd();
 		}
+
+		PlayerPrefs.SetInt(numPlays, currentPlays);
+	}
+
+	public static void HandlePurchaseMade() {
+		showAds = false;
+		PlayerPrefs.SetInt(hasMadePurchase, 1);
 	}
 }

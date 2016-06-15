@@ -21,6 +21,6 @@ public class BackgroundGradientManager : MonoBehaviour {
 
 	public void SetBackgroundGradient() {
 		topColor = ColorSchemeManager.bgColor;
-		botColor = topColor + new Color(.1f, .1f, .1f, 1);
+		botColor = ColorSchemeManager.scoreColor;
 	}
 }

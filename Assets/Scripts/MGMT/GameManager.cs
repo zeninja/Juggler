@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
 
+	enum GameState { preGame, gameOn, gameOver, menu };
+	GameState state;
+
 	public GameObject ball;
 	bool firstBallSpawned;
 	bool debugBallSpawned;
@@ -69,7 +72,6 @@ public class GameManager : MonoBehaviour {
 	void SpawnFirstBall() {
 		gameStarted = true;
 
-//		GameObject newBall = Instantiate(ball);
 		GameObject newBall = ObjectPool.instance.GetObjectForType("Ball", false);
 
 		newBall.transform.position = new Vector3(0, 6, 0);
@@ -77,7 +79,6 @@ public class GameManager : MonoBehaviour {
 
 		newBall.GetComponent<Ball>().zDepth = -1;
 		newBall.GetComponent<Ball>().SetDepth();
-//		newBall.GetComponent<Ball>().SetColor();
 		balls.Add(newBall);
 		numBalls++;
 	}
@@ -99,7 +100,6 @@ public class GameManager : MonoBehaviour {
 	public void LaunchBall() {
 		if(gameOver) { return; }
 
-//		GameObject newBall = Instantiate(ball);
 		GameObject newBall = ObjectPool.instance.GetObjectForType("Ball", false);
 
 		newBall.transform.position = new Vector2(Random.Range(-2.3f, 2.3f), -2);
@@ -141,7 +141,7 @@ public class GameManager : MonoBehaviour {
 		DestroyBalls();
 
 		ScoreManager.GetInstance().HandleGameOver();
-		AdManager.GetInstance().CheckAd();
+//		AdManager.GetInstance().CheckAd();
 	}
 
 	public void Restart() {

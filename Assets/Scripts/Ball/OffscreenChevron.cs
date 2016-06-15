@@ -63,6 +63,7 @@ public class OffscreenChevron : MonoBehaviour {
 	void Die() {
 		transform.parent = ball.transform;
 		transform.localPosition = Vector2.zero;
+		transform.localScale = Vector2.one;
 		spriteRenderer.enabled = false;
 		background.enabled = false;
 	}

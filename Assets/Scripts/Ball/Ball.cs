@@ -152,15 +152,18 @@ public class Ball : MonoBehaviour {
 	}
 
 	public void HandleDeath() {
-		rb.velocity = Vector2.zero;
-		rb.gravityScale = 0;
-		StartCoroutine(ShakeScale());
-		chevron.HandleDeath();
+		StartCoroutine(ShakeAndDie());
 	}
 
 	public AnimationCurve shakeCurve;
 
-	IEnumerator ShakeScale() {
+	IEnumerator ShakeAndDie() {
+		yield return new WaitForSeconds(Random.Range(0, .2f));
+
+		rb.velocity = Vector2.zero;
+		rb.gravityScale = 0;
+		chevron.HandleDeath();
+
 		float t = 0;
 		float duration = .5f;
 
