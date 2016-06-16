@@ -3,16 +3,15 @@ using System.Collections;
 
 using admob;
 
-public class AdManager : MonoBehaviour {
+public class AdManager1 : MonoBehaviour {
 
 	#region Util
-	private static AdManager instance;
-	private static bool instantiated;
+	private static AdManager1 instance;
 
-	public static AdManager GetInstance ()
+	public static AdManager1 GetInstance ()
 	{
 		if (!instance) {
-			instance = FindObjectOfType(typeof(AdManager)) as AdManager;
+			instance = FindObjectOfType(typeof(AdManager1)) as AdManager1;
 			if (!instance)
 				Debug.Log("No AdManager!!");
 		}
@@ -25,13 +24,13 @@ public class AdManager : MonoBehaviour {
 	public static int adThreshold = 3;
 	public static int currentPlays = 0;
 	string numPlays = "numPlays";
-	static string hasMadePurchase = "hasMadePurchase";
+	string hasMadePurchase = "hasMadePurchase";
 
 	public bool debug;
 
 	// Use this for initialization
 	void Start () {
-		#if !UNITY_EDITOR
+//		#if !UNITY_EDITOR
 		if (PlayerPrefs.HasKey(hasMadePurchase)) {
 			showAds = PlayerPrefs.GetInt(hasMadePurchase) == 0;
 		} else {
@@ -50,10 +49,8 @@ public class AdManager : MonoBehaviour {
 			Admob.Instance().setTesting(true);
 		}
 
-		Debug.Log("\n");
-		Debug.Log("SHOW ADS VALUE: " + showAds);
-		Debug.Log("\n");
-		#endif
+		Debug.Log("\nSHOW ADS VALUE: " + showAds + "\n");
+//		#endif
 
 	}
 
@@ -108,6 +105,6 @@ public class AdManager : MonoBehaviour {
 
 	public static void HandlePurchaseMade() {
 		showAds = false;
-		PlayerPrefs.SetInt(hasMadePurchase, 1);
+		PlayerPrefs.SetInt(AdManager1.GetInstance().hasMadePurchase, 1);
 	}
 }

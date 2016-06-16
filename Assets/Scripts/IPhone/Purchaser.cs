@@ -235,18 +235,18 @@ public class Purchaser : MonoBehaviour, IStoreListener
     }
 
 	void HandlePurchaseMade() {
-		AdManager.HandlePurchaseMade();
+//		AdManager.HandlePurchaseMade();
 	}
 
 	void Update() {
 
-		if(AdManager.showAds) {
-			// TODO: UPDATE THIS TO BE A DIRECT CALL RATHER THAN UPDATE
-			GetComponent<Image>().enabled = !GameManager.gameOver && !GameManager.gameStarted;
-			GetComponent<Button>().enabled = !GameManager.gameOver && !GameManager.gameStarted;
-		} else {
-			GetComponent<Image>().enabled = false;
-			GetComponent<Button>().enabled = false;
-		}
+//		if(AdManager.showAds) {
+//			// TODO: UPDATE THIS TO BE A DIRECT CALL RATHER THAN UPDATE
+//			GetComponent<Image>().enabled = !GameManager.gameOver && !GameManager.gameStarted;
+//			GetComponent<Button>().enabled = !GameManager.gameOver && !GameManager.gameStarted;
+//		} else {
+//			GetComponent<Image>().enabled = false;
+//			GetComponent<Button>().enabled = false;
+//		}
 	}
 }

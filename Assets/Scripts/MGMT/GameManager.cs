@@ -141,7 +141,7 @@ public class GameManager : MonoBehaviour {
 		DestroyBalls();
 
 		ScoreManager.GetInstance().HandleGameOver();
-//		AdManager.GetInstance().CheckAd();
+		AdManager.GetInstance().CheckAd();
 	}
 
 	public void Restart() {

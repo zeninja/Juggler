@@ -8,6 +8,7 @@ public class admobdemo : MonoBehaviour {
         Admob.Instance().bannerEventHandler += onBannerEvent;
         Admob.Instance().interstitialEventHandler += onInterstitialEvent;
         Admob.Instance().rewardedVideoEventHandler += onRewardedVideoEvent;
+        
 	}
 	
 	// Update is called once per frame
@@ -18,9 +19,9 @@ public class admobdemo : MonoBehaviour {
 		if (GUI.Button (new Rect (0, 0, 100, 60), "initadmob")) {
             Admob ad = Admob.Instance();
           
-			ad.initAdmob("Admob banner id", "ca-app-pub-2916476108966190/9838939664");
+			ad.initAdmob("ca-app-pub-xxxxxxxxxxxxxxxx/xxxxxxxxxx", "ca-app-pub-2916476108966190/9838939664");
           
-         //   ad.setTesting(true);
+//            ad.setTesting(true);
 		}
         if (GUI.Button(new Rect(120, 0, 100, 60), "showInterstitial"))
         {
@@ -43,7 +44,7 @@ public class admobdemo : MonoBehaviour {
             }
             else
             {
-				ad.loadRewardedVideo("ca-app-pub-2916476108966190/1617668865");
+                ad.loadRewardedVideo("ca-app-pub-xxxxxxxxxxxxxxxxxx/xxxxxxxxxx");
             }
         }
         if (GUI.Button(new Rect(240, 100, 100, 60), "showbanner"))
