@@ -11,7 +11,7 @@ namespace admob
         public event AdmobEventHandler rewardedVideoEventHandler;
 
 		private static Admob _instance;	
-		private AndroidJavaObject jadmob;
+	
 		public static Admob Instance()
 	    {
 	        if(_instance == null)
@@ -21,9 +21,80 @@ namespace admob
 	        }
 	        return _instance;
 	    }
+	    
+        #if UNITY_EDITOR
+       private void preInitAdmob()
+        {
+           
+        }
         
-       
-        #if UNITY_IOS
+        public void initAdmob(string bannerID, string fullID)
+        {
+            Debug.Log("calling initAdmob");
+        }
+
+        
+        public void showBannerAbsolute(AdSize size, int x, int y)
+        {
+            Debug.Log("calling showBannerAbsolute");
+        }
+
+        
+        public void showBannerRelative(AdSize size, int position, int marginY)
+        {
+            Debug.Log("calling showBannerRelative");
+        }
+
+        
+        public void removeBanner()
+        {
+            Debug.Log("calling removeBanner");
+        }
+
+        
+        public void loadInterstitial()
+        {
+            Debug.Log("calling loadInterstitial");
+        }
+
+        
+        public bool isInterstitialReady()
+        {
+            Debug.Log("calling isInterstitialReady");
+        return false;
+        }
+
+        
+        public void showInterstitial()
+        {
+            Debug.Log("calling showInterstitial");
+        }
+
+        public void loadRewardedVideo(string rewardedVideoID)
+        {
+            Debug.Log("calling loadRewardedVideo");
+        }
+        public bool isRewardedVideoReady()
+        {
+            Debug.Log("calling isRewardedVideoReady");
+            return false;
+        }
+        public void showRewardedVideo()
+        {
+            Debug.Log("calling showRewardedVideo");
+        }
+        
+        public void setTesting(bool v)
+        {
+            Debug.Log("calling setTesting");
+        }
+
+        
+        public void setForChildren(bool v)
+        {
+            Debug.Log("calling setForChildren");
+        }
+        #elif UNITY_IOS
         internal delegate void AdmobAdCallBack(string adtype, string eventName, string msg);
         private void preInitAdmob()
         {
@@ -120,19 +191,23 @@ namespace admob
          //   Debug.Log("c# receive callback " + adtype + "  " + eventName + "  " + msg);
             if (adtype == "banner")
             {
+            	if(Admob.Instance().bannerEventHandler!=null)
                 Admob.Instance().bannerEventHandler(eventName, msg);
             }
             else if (adtype == "interstitial")
             {
+            	if(Admob.Instance().interstitialEventHandler!=null)
                 Admob.Instance().interstitialEventHandler(eventName, msg);
             }
             else if (adtype == "rewardedVideo")
             {
+            	if(Admob.Instance().rewardedVideoEventHandler!=null)
                 Admob.Instance().rewardedVideoEventHandler(eventName, msg);
             }
         }
         
 #elif UNITY_ANDROID
+	private AndroidJavaObject jadmob;
          private void preInitAdmob(){
 			if (jadmob == null) {
                 AndroidJavaClass admobUnityPluginClass = new AndroidJavaClass("com.admob.plugin.AdmobUnityPlugin");
@@ -207,14 +282,17 @@ namespace admob
             {
                 if (adtype == "banner")
                 {
+                	if(admobInstance.bannerEventHandler!=null)
                     admobInstance.bannerEventHandler(eventName, paramString);
                 }
                 else if (adtype == "interstitial")
                 {
+                	if(admobInstance.interstitialEventHandler!=null)
                     admobInstance.interstitialEventHandler(eventName, paramString);
                 }
                 else if (adtype == "rewardedVideo")
                 {
+                	if(admobInstance.rewardedVideoEventHandler!=null)
                     admobInstance.rewardedVideoEventHandler(eventName, paramString);
                 }
             }

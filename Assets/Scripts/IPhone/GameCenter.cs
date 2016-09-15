@@ -13,6 +13,26 @@ public class GameCenter : MonoBehaviour {
 	public static string get100Pts	   = "Get100Pts";		// achievement ID in itunes Connect
 	public static string get50Pts1Hand = "LookMaOneHand";	// achievement ID in itunes Connect
 
+	private static GameCenter instance;
+	private static bool instantiated = false;
+
+	public static GameCenter GetInstance()
+	{
+		if (!instance) {
+			instance = FindObjectOfType(typeof(GameCenter)) as GameCenter;
+			if (!instance)
+				Debug.Log("No GameCenter!!");		
+		}
+		return instance;
+	}
+
+	void Awake() {
+		if(!instantiated) {
+			instance = this;
+			instantiated = true;
+		}
+	}
+
     void Start () {
         // Authenticate and register a ProcessAuthentication callback
         // This call needs to be made before we can proceed to other calls in the Social API
@@ -51,7 +71,6 @@ public class GameCenter : MonoBehaviour {
 
 	public void ShowLeaderboard() {
 		Social.ShowLeaderboardUI();
-//		Social.ShowAchievementsUI();
 	}
 
 	public void SetHighScore(int newScore) {
@@ -66,6 +85,12 @@ public class GameCenter : MonoBehaviour {
 	    _ReportAchievement(achievementID, 100.0f);
 	    #endif
 	}
+
+//	public void SetComplete(string achievementID) {
+//		Social.ReportProgress( achievementID, 100.0f, (result) => {
+//			Debug.Log ( result ? "Reported achievement" : "Failed to report achievement");
+//		});
+//	}
 
 	void Update() {
 		// TODO: UPDATE THIS TO BE A DIRECT CALL RATHER THAN UPDATE

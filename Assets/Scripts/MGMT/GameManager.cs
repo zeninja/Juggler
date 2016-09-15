@@ -36,6 +36,13 @@ public class GameManager : MonoBehaviour {
 		return instance;
 	}
 
+	void Awake() {
+		if(!instantiated) {
+			instance = this;
+			instantiated = true;
+		}
+	}
+
 	// Use this for initialization
 	void Start () {
 
