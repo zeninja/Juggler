@@ -27,7 +27,7 @@ public class BounceController : MonoBehaviour {
 	}
 
 	void ManageInput() {
-		if (GameManager.gameOver) { return; }
+		if(GameManager.GetInstance().state == GameManager.GameState.gameOver) { return; }
 
 		if (Input.GetMouseButtonDown(0)) {
 			startPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);

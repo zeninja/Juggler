@@ -4,16 +4,13 @@ using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
 
-	enum GameState { preGame, gameOn, gameOver, menu };
-	GameState state;
+	public enum GameState { menu, gameOn, gameOver, showingAd };
+	public GameState state = GameState.menu;
 
 	public GameObject ball;
-	bool firstBallSpawned;
+//	bool firstBallSpawned;
 	bool debugBallSpawned;
 	int numBalls;
-
-	public static bool gameStarted;
-	public static bool gameOver;
 
 	List<GameObject> balls = new List<GameObject>();
 
@@ -22,6 +19,8 @@ public class GameManager : MonoBehaviour {
 	float spawnHoldThreshold = .5f;
 
 	public GameObject burst;
+
+	public GameObject leaderboards, noAds, mute, tutorial;
 
 	private static GameManager instance;
 	private static bool instantiated;
@@ -51,34 +50,68 @@ public class GameManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		DebugSpawn();
-		SpawnBallOnInput();
+//		SpawnBallOnInput();
+
+		switch(state) {
+			case GameState.menu:
+				SpawnBallOnInput();
+				break;
+		}
+	}
+
+	public void SetState(GameState newState) {
+		state = newState;
+
+		switch(state) {
+			case GameState.menu:
+				inputDuration = 0;
+
+				tutorial.SetActive(true);
+				leaderboards.SetActive(true);
+				noAds.SetActive(AdManager.showAds);
+				mute.SetActive(true);
+				break;
+			case GameState.gameOn:
+				tutorial.SetActive(false);
+				leaderboards.SetActive(false);
+				noAds.SetActive(false);
+				mute.SetActive(false);
+				break;
+			case GameState.gameOver:
+				StartCoroutine(EndGame());
+				break;
+			case GameState.showingAd:
+				AdManager.GetInstance().CheckAd();
+				break;
+		}
 	}
 
 	void SpawnBallOnInput() {
-		if (!gameOver && !firstBallSpawned) {
-			if (Input.touchCount > 0 || Input.GetMouseButton(0)) {
-				inputDuration += Time.deltaTime;
+		if (state != GameState.menu) { return; }
 
-				ballImage.gameObject.SetActive(true);
-				ballImage.fillAmount = inputDuration/spawnHoldThreshold;
+		if (Input.touchCount > 0 || Input.GetMouseButton(0)) {
+			inputDuration += Time.deltaTime;
 
-				if (inputDuration >= spawnHoldThreshold) {
-					SpawnFirstBall();
-					burst.GetComponent<BurstController>().Burst();
+			ballImage.gameObject.SetActive(true);
+			ballImage.fillAmount = inputDuration/spawnHoldThreshold;
 
-					firstBallSpawned = true;
-					ballImage.gameObject.SetActive(false);
-				}
-			} else {
-				ballImage.fillAmount = 0;
+			if (inputDuration >= spawnHoldThreshold) {
+				SpawnFirstBall();
+				burst.GetComponent<BurstController>().Burst();
+				ballImage.gameObject.SetActive(false);
 				inputDuration = 0;
 			}
+		} else {
+			ballImage.fillAmount = 0;
+			inputDuration = 0;
 		}
 	}
 
 	void SpawnFirstBall() {
-		gameStarted = true;
+		if (state != GameState.menu) { return; }
 
+		SetState(GameState.gameOn);
+		Debug.Log("Spawning first ball");
 		GameObject newBall = ObjectPool.instance.GetObjectForType("Ball", false);
 
 		newBall.transform.position = new Vector3(0, 6, 0);
@@ -87,7 +120,6 @@ public class GameManager : MonoBehaviour {
 		newBall.GetComponent<Ball>().zDepth = -1;
 		newBall.GetComponent<Ball>().SetDepth();
 		balls.Add(newBall);
-		numBalls++;
 	}
 
 	public void AdjustBallDepth(GameObject latestBall) {
@@ -105,8 +137,6 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void LaunchBall() {
-		if(gameOver) { return; }
-
 		GameObject newBall = ObjectPool.instance.GetObjectForType("Ball", false);
 
 		newBall.transform.position = new Vector2(Random.Range(-2.3f, 2.3f), -2);
@@ -117,12 +147,11 @@ public class GameManager : MonoBehaviour {
 		newBall.GetComponent<Ball>().SetDepth();
 
 		balls.Add(newBall);
-		numBalls++;
 	}
 
 	void DebugSpawn() {
 		#if UNITY_EDITOR 
-		if (Input.GetKeyDown(KeyCode.Space) || (Input.touches.Length == 2 && !debugBallSpawned) && !gameOver) {
+		if (Input.GetKeyDown(KeyCode.Space) || (Input.touches.Length == 2 && !debugBallSpawned)) {
 			LaunchBall();
 			debugBallSpawned = true;
 		}
@@ -133,27 +162,29 @@ public class GameManager : MonoBehaviour {
 		#endif
 	}
 
-	public void DestroyBalls() {
+	IEnumerator EndGame() {
+		yield return StartCoroutine(DestroyBalls());
+		ScoreManager.GetInstance().HandleGameOver();
+	}
+
+	IEnumerator DestroyBalls() {
 		for (int i = 0; i < balls.Count; i++) {
 			balls[i].GetComponent<Ball>().HandleDeath();
 		}
 		balls.Clear();
+		yield return .25f;
 	}
 
 	public void HandleGameOver() {
-		if(gameOver) { return; }
-
-		gameOver = true;
-		gameStarted = false;
-		DestroyBalls();
-
-		ScoreManager.GetInstance().HandleGameOver();
-		AdManager.GetInstance().CheckAd();
+		if (state == GameState.gameOn) {
+			SetState(GameState.gameOver);
+		}
 	}
 
-	public void Restart() {
-		gameOver = false;
-		firstBallSpawned = false;
-		numBalls = 0;
+
+	public GUIStyle hudStyle;
+
+	void OnGUI() {
+		GUI.Label(new Rect(40, Screen.height - 80, Screen.width/2, Screen.height/8), state.ToString(), hudStyle);
 	}
 }

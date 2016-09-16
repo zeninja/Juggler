@@ -27,7 +27,7 @@ public class OffscreenChevron : MonoBehaviour {
 	}
 
 	void Update() {
-		if(GameManager.gameOver) { return; }
+		if(GameManager.GetInstance().state == GameManager.GameState.gameOver) { return; }
 
 		spriteRenderer.enabled = ball.transform.position.y > yBound || Mathf.Abs(ball.transform.position.x) > xBound;
 		background.enabled = ball.transform.position.y > yBound || Mathf.Abs(ball.transform.position.x) > xBound;

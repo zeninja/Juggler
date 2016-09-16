@@ -86,15 +86,13 @@ public class GameCenter : MonoBehaviour {
 	    #endif
 	}
 
+	void CheckProgress(string achievementID) {
+//		Social.
+	}
+
 //	public void SetComplete(string achievementID) {
 //		Social.ReportProgress( achievementID, 100.0f, (result) => {
 //			Debug.Log ( result ? "Reported achievement" : "Failed to report achievement");
 //		});
 //	}
-
-	void Update() {
-		// TODO: UPDATE THIS TO BE A DIRECT CALL RATHER THAN UPDATE
-		GetComponent<Image>().enabled = !GameManager.gameOver && !GameManager.gameStarted;
-		GetComponent<Button>().enabled = !GameManager.gameOver && !GameManager.gameStarted;
-	}
 }

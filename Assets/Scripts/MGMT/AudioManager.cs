@@ -14,6 +14,8 @@ public class AudioManager : MonoBehaviour {
 	private static AudioManager instance;
 	private static bool instantiated;
 
+	public static bool muted;
+
 	public static AudioManager GetInstance ()
 	{
 		if (!instance) {
@@ -35,6 +37,6 @@ public class AudioManager : MonoBehaviour {
 	}
 
 	public void PlayClip(AudioClip clip) {
-		
+		GetComponent<AudioSource>().PlayOneShot(clip);
 	}
 }

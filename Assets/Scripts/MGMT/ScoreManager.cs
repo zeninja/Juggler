@@ -69,11 +69,12 @@ public class ScoreManager : MonoBehaviour {
 	}
 
 	public void UpdateScore() {
-		if (GameManager.gameOver) { return; }
+		if (GameManager.GetInstance().state == GameManager.GameState.gameOver) { return; }
 
 		score++;
 		GetComponent<BallSpawner>().CheckScoreAndSpawnBall();
 		StartCoroutine("AnimateScore");
+		CheckAchievementProgress();
 	}
 
 	IEnumerator AnimateScore() {
@@ -94,7 +95,6 @@ public class ScoreManager : MonoBehaviour {
 	}
 
 	public void HandleGameOver() {
-		CheckAchievementProgress();
 		StartCoroutine(SetHighScoreAndReset());
 	}
 
@@ -147,13 +147,15 @@ public class ScoreManager : MonoBehaviour {
 
 			yield return new WaitForSeconds(resetDuration/startingScore);
 		}
-		GameManager.GetInstance().Restart();
+
+		GameManager.GetInstance().SetState(GameManager.GameState.showingAd);
+		Debug.Log("ScoreManager called Setting state");
 	}
 
 	IEnumerator FlashText() {
 		float timeFinished = Time.time + highScoreDuration;
 
-		newHighScoreText.GetComponent<Text>().enabled = true;
+		newHighScoreText.GetComponent<Text>().enabled = false;
 
 		while (Time.time < timeFinished) {
 			newHighScoreText.GetComponent<Text>().enabled = !newHighScoreText.GetComponent<Text>().enabled;
@@ -217,8 +219,7 @@ public class ScoreManager : MonoBehaviour {
 
 //			t += (Time.deltaTime * 3)/highScoreDuration;
 //			t += (Time.deltaTime * numLoops) % (highScoreDuration/numLoops);
-			newHighScoreText.GetComponent<Text>().color = highScoreGradient.Evaluate(t) ;
-
+			newHighScoreText.GetComponent<Text>().color = highScoreGradient.Evaluate(t);
 			yield return new WaitForEndOfFrame();
 		}
 

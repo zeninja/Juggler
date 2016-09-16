@@ -58,7 +58,7 @@ public class ColorSchemeManager : MonoBehaviour {
 	        // Perform your "shaking actions" here, with suitable guards in the if check above, if necessary to not, to not fire again if they're already being performed.
 //	        Debug.Log("Shake event detected at time "+Time.time);	
 
-			if(!GameManager.gameOver && !GameManager.gameStarted) {
+			if(GameManager.GetInstance().state == GameManager.GameState.menu) {
 		        SetNewColorScheme();
 		        nextShakeTime = Time.time + shakeDelay;
 	        }

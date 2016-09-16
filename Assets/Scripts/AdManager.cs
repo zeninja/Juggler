@@ -27,6 +27,10 @@ public class AdManager : MonoBehaviour {
 
 	public bool forceAdsOff;
 
+	void Awake() {
+		Admob.Instance().interstitialEventHandler += OnInterstitialEvent;
+	}
+
 	// Use this for initialization
 	void Start () {
 //		#if !UNITY_EDITOR
@@ -35,6 +39,10 @@ public class AdManager : MonoBehaviour {
 		} else {
 			PlayerPrefs.SetInt(hasMadePurchase, 0);
 			showAds = true;
+		}
+
+		if (forceAdsOff) {
+			showAds = false;
 		}
 
 		if (PlayerPrefs.HasKey(numPlays)) {
@@ -48,8 +56,8 @@ public class AdManager : MonoBehaviour {
 			InitAds();
 		}
 
-		Debug.Log("\nSHOW ADS VALUE: " + showAds + "\n");
-		Debug.Log("\nHAS MADE PURCHASE: " + PlayerPrefs.GetInt(hasMadePurchase));
+//		Debug.Log("\nSHOW ADS VALUE: " + showAds + "\n");
+//		Debug.Log("\nHAS MADE PURCHASE: " + PlayerPrefs.GetInt(hasMadePurchase));
 //		#endif
 
 	}
@@ -64,16 +72,25 @@ public class AdManager : MonoBehaviour {
 
 	void TryToShowAd()
 	{
-		if(forceAdsOff) { return; }
+		if(forceAdsOff) 
+		{ 
+			GameManager.GetInstance().SetState(GameManager.GameState.menu);
+			return;
+		}
 
 		#if !UNITY_EDITOR
-		if (showAds) {
+		if (Application.internetReachability == NetworkReachability.NotReachable) {
+			GameManager.GetInstance().SetState(GameManager.GameState.menu);
+		} else {
+
 			if (Admob.Instance().isInterstitialReady()) {
 				Admob.Instance().showInterstitial();
 		    } else {
 		    	Admob.Instance().loadInterstitial();
 		    }
-	    }
+			currentPlays = 0;
+		}
+
 		#endif
 	}
 
@@ -93,14 +110,54 @@ public class AdManager : MonoBehaviour {
 //	}
 
 	public void CheckAd() {
-		currentPlays++;
+		if(showAds) {
 
-		if (currentPlays == adThreshold) {
-			currentPlays = 0;
-			TryToShowAd();
+			currentPlays++;
+
+			if(Application.internetReachability != NetworkReachability.NotReachable) {
+
+				if (currentPlays >= adThreshold) {
+					TryToShowAd();
+				} else {
+					GameManager.GetInstance().SetState(GameManager.GameState.menu);
+					Debug.Log("NO AD THRESHOLD called Setting state at: " + Time.time);
+
+					PlayerPrefs.SetInt(numPlays, currentPlays);
+				}
+			} else {
+				GameManager.GetInstance().SetState(GameManager.GameState.menu);
+				Debug.Log("NO INTERNET called Setting state at: " + Time.time);
+
+				PlayerPrefs.SetInt(numPlays, currentPlays);
+			}
+
+		} else {
+			GameManager.GetInstance().SetState(GameManager.GameState.menu);
+			Debug.Log("SHOW ADS FALSE called Setting state at: " + Time.time);
 		}
+	}
 
-		PlayerPrefs.SetInt(numPlays, currentPlays);
+	void OnInterstitialEvent(string eventName, string msg) {
+		switch(eventName) {
+			case "onAdOpened":
+				currentPlays = 0;
+				PlayerPrefs.SetInt(numPlays, currentPlays);
+				Debug.Log("OnAdOpened called Setting state at: " + Time.time);
+
+				break;
+
+			case "onAdClosed":
+				GameManager.GetInstance().SetState(GameManager.GameState.menu);
+				Debug.Log("OnAdClosed called Setting state at: " + Time.time);
+	
+				break;
+
+			case "onAdFailedToLoad":
+				Admob.Instance().loadInterstitial();
+				GameManager.GetInstance().SetState(GameManager.GameState.menu);
+				Debug.Log("OnAdFailedToLoad called Setting state at: " + Time.time);
+				break;
+		}
 	}
 
 	public static void HandlePurchaseMade() {

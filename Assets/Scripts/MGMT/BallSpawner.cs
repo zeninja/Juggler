@@ -20,7 +20,8 @@ public class BallSpawner : MonoBehaviour {
 	}
 
 	void SpawnBall() {
-		GameManager.GetInstance().LaunchBall();
-
+		if (GameManager.GetInstance().state == GameManager.GameState.gameOn) {
+			GameManager.GetInstance().LaunchBall();
+		}
 	}
 }

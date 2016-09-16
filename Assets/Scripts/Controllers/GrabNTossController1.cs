@@ -33,7 +33,7 @@ public class GrabNTossController1 : MonoBehaviour {
 	}
 
 	void ManageInput() {
-		if (GameManager.gameOver) { return; }
+		if(GameManager.GetInstance().state == GameManager.GameState.gameOver) { return; }
 
 		if (Input.GetMouseButton(0)) {
 			// Rotate the hand to look towards the aim direction
